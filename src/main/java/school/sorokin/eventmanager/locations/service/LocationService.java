@@ -8,8 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 import school.sorokin.eventmanager.locations.domain.LocationDomain;
 import school.sorokin.eventmanager.locations.entity.ConverterToEntity;
 import school.sorokin.eventmanager.locations.entity.LocationEntity;
+import school.sorokin.eventmanager.locations.exception.LocationCapacityException;
 import school.sorokin.eventmanager.locations.exception.NotFoundLocationException;
 import school.sorokin.eventmanager.locations.repository.LocationRepository;
+
+import java.util.List;
 
 @Service
 public class LocationService {
@@ -37,39 +40,40 @@ public class LocationService {
     @Transactional
     public LocationDomain updateLocation(Integer id, LocationDomain locationDomain) {
         log.info("Запрос на обновление локации");
-        checkExistById(id);
-        var updateLocation = locationRepository.updateLocation(id, locationDomain);
-        log.info("Запрос на обновление локации {} c id {} выполнен",
-                updateLocation.getName(),
+        LocationEntity updateLocation = checkFindById(id);
+        checkLocationCapacity(locationDomain, updateLocation);
+        LocationEntity updatedLocation = locationRepository.updateLocation(id, locationDomain);
+        log.info("Запрос на обновление локации {} c id {} выполнен", updateLocation.getName(),
                 updateLocation.getId());
         log.debug("Данные об обновленной локации:{}", updateLocation);
-        return converter.convertToDomain(locationRepository.findById(id).get());
+        return converter.convertToDomain(updatedLocation);
     }
 
+    @Transactional(readOnly = true)
     public LocationDomain findByIdLocation(Integer id) {
-        return converter.convertToDomain(checkFindByIdHelper(id));
+        return converter.convertToDomain(checkFindById(id));
     }
+
     @Transactional
     public void deleteLocation(Integer id) {
-        log.info("Запрос на удаление локации по id={}",id);
-        checkExistById(id);
-        log.info("Локация по id={} удалена", id);
+        log.info("Запрос на удаление локации по id={}", id);
+        checkFindById(id);
+        log.debug("Локация по id={} удалена", id);
         locationRepository.deleteById(id);
     }
 
-    private void checkExistById(Integer id) {
-        log.info("Запрос на проверку локации по id");
-        log.info("Проверка локации с id={}", id);
-        if (!locationRepository.existsById(id)) {
-            log.warn("локация с id={}не найдена", id);
-            throw new NotFoundLocationException(
-                    "Локации с id=%d не существует"
-                            .formatted(id));
-        }
-        log.debug("локация с id={} существует в базе", id);
+    @Transactional(readOnly = true)
+    public List<LocationDomain> getAllLocations() {
+        log.info("Запрос на получение списка всех локаций");
+         List<LocationDomain> allLocations = locationRepository
+                 .findAll()
+                 .stream()
+                 .map(converter::convertToDomain).toList();
+         log.debug("Найдено локаций:{}", allLocations.size());
+         return allLocations;
     }
 
-    private LocationEntity checkFindByIdHelper(Integer id) {
+    private LocationEntity checkFindById(Integer id) {
         log.info("Запрос на получение локации по id={}", id);
         return locationRepository.findById(id)
                 .orElseThrow(
@@ -81,6 +85,14 @@ public class LocationService {
                         });
     }
 
+    private void checkLocationCapacity(LocationDomain locationDomain, LocationEntity updateLocation) {
+        if (locationDomain.getCapacity() < updateLocation.getCapacity()) {
+            log.warn("Произошла ошибка, вместимость у {} с id={} должна быть больше {}",
+                    updateLocation.getName(), updateLocation.getId(), updateLocation.getCapacity());
+            throw new LocationCapacityException("Нельзя менять вместительность локации в меньшую сторону");
+        }
+
+    }
 
 }
 

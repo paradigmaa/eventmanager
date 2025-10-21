@@ -1,11 +1,10 @@
 package school.sorokin.eventmanager.locations.domain;
-
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import school.sorokin.eventmanager.locations.dto.LocationDto;
 import school.sorokin.eventmanager.locations.entity.LocationEntity;
 
 public class LocationDomain {
+
+    private Integer id;
 
     private String name;
 
@@ -15,52 +14,47 @@ public class LocationDomain {
 
     private String description;
 
-    public LocationDomain() {
-    }
-
     public LocationDomain(LocationDomain locationDomain) {
+        this.id = locationDomain.getId();
         this.name = locationDomain.getName();
-        this.address = locationDomain.address;
+        this.address = locationDomain.getAddress();
         this.capacity = locationDomain.getCapacity();
         this.description = locationDomain.getDescription();
     }
 
     public LocationDomain(LocationEntity locationEntity) {
+        this.id = locationEntity.getId();
         this.name = locationEntity.getName();
         this.address = locationEntity.getAddress();
         this.capacity = locationEntity.getCapacity();
         this.description = locationEntity.getDescription();
     }
 
-    public String getName() {
-        return name;
+    public LocationDomain(LocationDto locationDto){
+        this.id = locationDto.getId();
+        this.name = locationDto.getName();
+        this.address = locationDto.getAddress();
+        this.capacity = locationDto.getCapacity();
+        this.description = locationDto.getDescription();
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public Integer getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getAddress() {
         return address;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
     public Integer getCapacity() {
         return capacity;
     }
 
-    public void setCapacity(Integer capacity) {
-        this.capacity = capacity;
-    }
-
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 }
