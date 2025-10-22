@@ -13,7 +13,7 @@ public class LocationEntity {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "adress")
+    @Column(name = "address")
     private String address;
 
     @Column(name = "capacity")
@@ -22,15 +22,8 @@ public class LocationEntity {
     @Column(name = "description")
     private String description;
 
-    public LocationEntity(Integer id, String name, String address, Integer capacity, String description) {
-        this.id = id;
-        this.name = name;
-        this.address = address;
-        this.capacity = capacity;
-        this.description = description;
-    }
-
     public LocationEntity(LocationDomain locationDomain) {
+        this.id = locationDomain.getId();
         this.name = locationDomain.getName();
         this.address = locationDomain.getAddress();
         this.capacity = locationDomain.getCapacity();
@@ -45,39 +38,19 @@ public class LocationEntity {
         return id;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getAddress() {
         return address;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
     public Integer getCapacity() {
         return capacity;
     }
 
-    public void setCapacity(Integer capacity) {
-        this.capacity = capacity;
-    }
-
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 }

@@ -11,15 +11,18 @@ import school.sorokin.eventmanager.locations.entity.LocationEntity;
 public interface LocationRepository extends JpaRepository<LocationEntity, Integer> {
 
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Transactional
     @Query("""
-    UPDATE LocationEntity l SET l.name = :#{#locationDomain.name},
-        l.address = :#{#locationDomain.address},
-            l.capacity = :#{#locationDomain.capacity},
-                l.description = :#{#locationDomain.description}
-    WHERE l.id = :id
-    """)
-    LocationEntity updateLocation(@Param("id") Integer id,
+            UPDATE LocationEntity l SET l.name = :#{#locationDomain.name},
+                l.address = :#{#locationDomain.address},
+                    l.capacity = :#{#locationDomain.capacity},
+                        l.description = :#{#locationDomain.description}
+            WHERE l.id = :id
+            """)
+    void updateLocation(@Param("id") Integer id,
                         @Param("locationDomain") LocationDomain locationDomain);
+
+
+    boolean existsByName(String name);
 }

@@ -1,4 +1,5 @@
 package school.sorokin.eventmanager.locations.domain;
+
 import school.sorokin.eventmanager.locations.dto.LocationDto;
 import school.sorokin.eventmanager.locations.entity.LocationEntity;
 
@@ -30,7 +31,7 @@ public class LocationDomain {
         this.description = locationEntity.getDescription();
     }
 
-    public LocationDomain(LocationDto locationDto){
+    public LocationDomain(LocationDto locationDto) {
         this.id = locationDto.getId();
         this.name = locationDto.getName();
         this.address = locationDto.getAddress();

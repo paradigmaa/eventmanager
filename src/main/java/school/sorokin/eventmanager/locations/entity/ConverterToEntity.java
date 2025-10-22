@@ -6,11 +6,11 @@ import school.sorokin.eventmanager.locations.domain.LocationDomain;
 @Component
 public class ConverterToEntity {
 
-    public LocationEntity convertToEntity(LocationDomain locationDomain){
+    public LocationEntity convertToEntity(LocationDomain locationDomain) {
         return new LocationEntity(locationDomain);
     }
 
-    public LocationDomain convertToDomain(LocationEntity locationEntity){
+    public LocationDomain convertToDomain(LocationEntity locationEntity) {
         return new LocationDomain(locationEntity);
     }
 }

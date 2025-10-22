@@ -1,6 +1,6 @@
 package school.sorokin.eventmanager.locations.dto;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -12,14 +12,14 @@ public class LocationDto {
     @Null
     private Integer id;
 
-    @NotBlank
+    @NotBlank(message = "Имя не может быть пустым")
     private String name;
 
-    @NotBlank
+    @NotBlank(message = "Локация должна иметь адрес")
     private String address;
 
     @NotNull
-    @Min(5)
+    @Min(value = 5, message = "не должно быть меньше 5")
     private Integer capacity;
 
     @NotBlank
