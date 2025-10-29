@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import school.sorokin.eventmanager.locations.domain.LocationDomain;
-import school.sorokin.eventmanager.locations.entity.ConverterToEntity;
+import school.sorokin.eventmanager.locations.domain.Location;
+import school.sorokin.eventmanager.locations.dto.LocationConverter;
 import school.sorokin.eventmanager.locations.entity.LocationEntity;
 import school.sorokin.eventmanager.locations.exception.LocationCapacityException;
 import school.sorokin.eventmanager.locations.exception.LocationTakenNameException;
@@ -19,58 +19,60 @@ import java.util.List;
 @Service
 public class LocationService {
     private final LocationRepository locationRepository;
-    private final ConverterToEntity converter;
+    private final LocationConverter locationConverter;
 
     private static final Logger log = LoggerFactory.getLogger(LocationService.class);
 
     @Autowired
-    public LocationService(LocationRepository locationRepository, ConverterToEntity converter) {
+    public LocationService(LocationRepository locationRepository, LocationConverter locationConverter) {
         this.locationRepository = locationRepository;
-        this.converter = converter;
+        this.locationConverter = locationConverter;
     }
 
     @Transactional
-    public LocationDomain createLocation(LocationDomain locationDomain) {
+    public Location createLocation(Location location) {
         log.info("Запрос на создание локации у сервиса");
-        checkLocationTakenName(locationDomain);
-        var newLocation = locationRepository
-                .save(converter.convertToEntity(new LocationDomain(locationDomain)));
+        checkLocationName(location.getName(), null);
+        var newLocation = locationRepository.save(locationConverter.convertToEntity(location));
         log.info("Запрос на создание локации '{}' с id={} у сервиса выполнен",
                 newLocation.getName(),
                 newLocation.getId());
-        return converter.convertToDomain(newLocation);
+        return locationConverter.convertToDomain(newLocation);
     }
 
     @Transactional
-    public LocationDomain updateLocation(Integer id, LocationDomain newLocation) {
-        LocationEntity oldEntity = checkFindById(id);
-        LocationDomain updateLocation = new LocationDomain(newLocation);
-        checkLocationTakeNameUpdate(oldEntity, updateLocation);
-        checkLocationCapacity(updateLocation, oldEntity);
-        return converter.convertToDomain(checkFindById(id));
+    public Location updateLocation(Integer id, Location update) {
+        log.info("Запрос на обновление локации без изменения имени");
+        LocationEntity oldLocation = checkFindById(id);
+        checkLocationName(update.getName(), id);
+        checkLocationCapacity(update, oldLocation);
+        LocationEntity updateEntity = setUpdateLocation(oldLocation, update);
+        log.info("Запрос на обновление локации '{}' c id={} выполнен", updateEntity.getName(), updateEntity.getId());
+        return locationConverter.convertToDomain(updateEntity);
     }
 
     @Transactional(readOnly = true)
-    public LocationDomain findByIdLocation(Integer id) {
+    public Location findByIdLocation(Integer id) {
         log.info("Запрос на поиск локации у сервиса");
-        return converter.convertToDomain(checkFindById(id));
+        log.info("Запрос на поиск локации у сервиса закончен");
+        return locationConverter.convertToDomain(checkFindById(id));
     }
 
     @Transactional
     public void deleteLocation(Integer id) {
         log.info("Запрос на удаление локации по id={} у сервиса", id);
         checkFindById(id);
-        log.info("Локация по id={} удалена в сервисе", id);
         locationRepository.deleteById(id);
+        log.info("Локация по id={} удалена в сервисе", id);
     }
 
     @Transactional(readOnly = true)
-    public List<LocationDomain> getAllLocations() {
+    public List<Location> getAllLocations() {
         log.info("Запрос на получение списка всех локаций у сервиса");
-        List<LocationDomain> allLocations = locationRepository
+        List<Location> allLocations = locationRepository
                 .findAll()
                 .stream()
-                .map(converter::convertToDomain).toList();
+                .map(locationConverter::convertToDomain).toList();
         log.info("Найдено локаций:{}", allLocations.size());
         return allLocations;
     }
@@ -87,7 +89,7 @@ public class LocationService {
                         });
     }
 
-    private void checkLocationCapacity(LocationDomain locationDomain, LocationEntity updateLocation) {
+    private void checkLocationCapacity(Location locationDomain, LocationEntity updateLocation) {
         if (locationDomain.getCapacity() < updateLocation.getCapacity()) {
             log.warn("Произошла ошибка, вместимость у локации '{}' с id={} должна быть не меньше {}",
                     updateLocation.getName(), updateLocation.getId(), updateLocation.getCapacity());
@@ -97,31 +99,24 @@ public class LocationService {
 
     }
 
-    private void checkLocationTakenName(LocationDomain locationDomain) {
-        if (locationRepository.existsByName(locationDomain.getName())) {
-            log.warn("Попытка создать дубликат локации c именем '{}'",
-                    locationDomain.getName());
-            throw new LocationTakenNameException("Локация с названием '%s' уже существует"
-                    .formatted(locationDomain.getName()));
+    private void checkLocationName(String name, Integer excludeId) {
+        boolean nameExists;
+        if (excludeId == null) {
+            nameExists = locationRepository.existsByName(name);
+        } else {
+            nameExists = locationRepository.existsByNameAndIdNot(name, excludeId);
+        }
+        if (nameExists) {
+            throw new LocationTakenNameException("Локация с названием '%s' уже существует".formatted(name));
         }
     }
 
-    private void checkLocationTakeNameUpdate(LocationEntity oldEntity, LocationDomain updateLocation) {
-        if (updateLocation.getName().equals(oldEntity.getName())) {
-            log.info("Запрос на обновление локации без изменения имени");
-            locationRepository.updateLocation(oldEntity.getId(), updateLocation);
-            log.info("Запрос на обновление локации '{}' c id={} без изменения имени выполнен",
-                    updateLocation.getName(),
-                    updateLocation.getId());
-        } else {
-            log.info("Запрос на обновление локации у сервиса с изменением имени");
-            checkLocationTakenName(updateLocation);
-            locationRepository.updateLocation(oldEntity.getId(), updateLocation);
-            log.info("Запрос на обновление локации '{}' c id={} с изменением имени выполнен",
-                    updateLocation.getName(),
-                    oldEntity.getId());
-        }
-
+    private LocationEntity setUpdateLocation(LocationEntity oldLocation, Location updateLocation) {
+        oldLocation.setName(updateLocation.getName());
+        oldLocation.setAddress(updateLocation.getAddress());
+        oldLocation.setCapacity(updateLocation.getCapacity());
+        oldLocation.setDescription(updateLocation.getDescription());
+        return locationRepository.save(oldLocation);
     }
 }
 
