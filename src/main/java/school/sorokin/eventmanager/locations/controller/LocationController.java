@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import school.sorokin.eventmanager.locations.domain.Location;
 import school.sorokin.eventmanager.locations.dto.CreatLocationDto;
+import school.sorokin.eventmanager.locations.dto.ResponseLocationDto;
+import school.sorokin.eventmanager.locations.dto.UpdateLocationDto;
 import school.sorokin.eventmanager.locations.service.LocationService;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,9 +30,9 @@ public class LocationController {
     }
 
     @PostMapping()
-    public ResponseEntity<CreatLocationDto> createLocation(@RequestBody @Valid CreatLocationDto creatLocationDto) {
+    public ResponseEntity<ResponseLocationDto> createLocation(@RequestBody @Valid CreatLocationDto creatLocationDto) {
         log.info("POST /locations - Создание локации: '{}'", creatLocationDto.getName());
-        Location newLocation = locationService.createLocation(creatLocationDto);
+        ResponseLocationDto newLocation = locationService.createLocation(creatLocationDto);
         log.info("POST /locations - локация '{}' создана", newLocation.getName());
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -38,25 +40,25 @@ public class LocationController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CreatLocationDto> updateLocation(@PathVariable("id") Integer id, @RequestBody @Valid CreatLocationDto creatLocationDto) {
-        log.info("PUT /locations/{} - Обновление локации:'{}'", id, creatLocationDto.getName());
-        Location updateLocation = locationService.updateLocation(id, converter.convertToDomain(creatLocationDto));
+    public ResponseEntity<ResponseLocationDto> updateLocation(@PathVariable("id") Integer id, @RequestBody @Valid UpdateLocationDto updateLocationDto) {
+        log.info("PUT /locations/{} - Обновление локации:'{}'", id, updateLocationDto.getName());
+        ResponseLocationDto updatedLocation =  locationService.updateLocation(id, updateLocationDto);
         log.info("PUT /locations/{} - Локация обновлена", id);
-        return ResponseEntity.ok(converter.convertToDto(updateLocation));
+        return ResponseEntity.ok(updatedLocation);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CreatLocationDto> findLocationById(@PathVariable("id") Integer id) {
+    public ResponseEntity<ResponseLocationDto> findLocationById(@PathVariable("id") Integer id) {
         log.info("GET /locations/{} - Получение локации", id);
-        Location locationDomain = locationService.findByIdLocation(id);
-        log.info("GET /locations/{} - Локация '{}' получена", id, locationDomain.getName());
-        return ResponseEntity.ok(converter.convertToDto(locationDomain));
+        ResponseLocationDto findLocal =  locationService.findByIdLocation(id);
+        log.info("GET /locations/{} - Локация '{}' получена", id, findLocal.getName());
+        return ResponseEntity.ok(findLocal);
     }
 
     @GetMapping()
-    public ResponseEntity<List<CreatLocationDto>> getAllLocations() {
+    public ResponseEntity<List<ResponseLocationDto>> getAllLocations() {
         log.info("GET /locations - Получение всех локаций");
-        return converterListHelper();
+        return ResponseEntity.ok(locationService.getAllLocations());
     }
 
     @DeleteMapping("/{id}")
@@ -66,13 +68,5 @@ public class LocationController {
         log.info("DELETE /locations - локация по id={} удалена", id);
         return ResponseEntity.noContent().build();
     }
-
-    private ResponseEntity<List<CreatLocationDto>> converterListHelper() {
-        return ResponseEntity.ok(locationService.getAllLocations()
-                .stream()
-                .map(converter::convertToDto)
-                .toList());
-    }
-
 
 }

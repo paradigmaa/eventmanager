@@ -1,32 +1,26 @@
 package school.sorokin.eventmanager.locations.dto;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-import jakarta.validation.constraints.*;
+public class ResponseLocationDto {
+    private  Integer id;
 
-public class CreatLocationDto {
-    @Null
-    private Integer id;
-
-    @NotBlank(message = "Имя не может быть пустым")
     private String name;
 
-    @NotBlank(message = "Локация должна иметь адрес")
     private String address;
 
-    @NotNull
-    @Min(value = 5, message = "не должно быть меньше 5")
-    @Max(value = 1000000, message = "не должно превышать 1 млн")
     private Integer capacity;
 
-    @NotBlank(message = "описание не должно быть пустым")
     private String description;
 
-
-    public CreatLocationDto() {
+    public ResponseLocationDto() {
 
     }
 
-    public CreatLocationDto(Integer id, String name, String address, Integer capacity, String description) {
+    public ResponseLocationDto(Integer id, String name, String address, Integer capacity, String description) {
         this.id = id;
         this.name = name;
         this.address = address;

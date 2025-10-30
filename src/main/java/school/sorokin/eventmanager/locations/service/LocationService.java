@@ -7,7 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import school.sorokin.eventmanager.locations.domain.Location;
+import school.sorokin.eventmanager.locations.dto.CreatLocationDto;
 import school.sorokin.eventmanager.locations.dto.LocationConverter;
+import school.sorokin.eventmanager.locations.dto.ResponseLocationDto;
+import school.sorokin.eventmanager.locations.dto.UpdateLocationDto;
 import school.sorokin.eventmanager.locations.entity.LocationEntity;
 import school.sorokin.eventmanager.locations.exception.LocationCapacityException;
 import school.sorokin.eventmanager.locations.exception.LocationTakenNameException;
@@ -30,32 +33,34 @@ public class LocationService {
     }
 
     @Transactional
-    public Location createLocation(Location location) {
+    public ResponseLocationDto createLocation(CreatLocationDto createLocation) {
         log.info("Запрос на создание локации у сервиса");
-        checkLocationName(location.getName(), null);
-        var newLocation = locationRepository.save(locationConverter.convertToEntity(location));
+        checkLocationName(createLocation.getName(), null);
+        Location newLocation = locationConverter.convertCreateDtoToLocation(createLocation);
+        LocationEntity saveLocation = locationRepository.save(locationConverter.convertLocationToEntity(newLocation));
         log.info("Запрос на создание локации '{}' с id={} у сервиса выполнен",
                 newLocation.getName(),
                 newLocation.getId());
-        return locationConverter.convertToDomain(newLocation);
+        return locationConverter.convertEntityToResponseDto(saveLocation);
     }
 
     @Transactional
-    public Location updateLocation(Integer id, Location update) {
+    public ResponseLocationDto updateLocation(Integer id, UpdateLocationDto updateRequest) {
         log.info("Запрос на обновление локации без изменения имени");
-        LocationEntity oldLocation = checkFindById(id);
-        checkLocationName(update.getName(), id);
-        checkLocationCapacity(update, oldLocation);
-        LocationEntity updateEntity = setUpdateLocation(oldLocation, update);
+        LocationEntity existingLocation = checkFindById(id);
+        Location updateLocation = locationConverter.convertUpdateLocationDtoToLocation(updateRequest);
+        checkLocationName(updateLocation.getName(), id);
+        checkLocationCapacity(existingLocation, updateLocation);
+        LocationEntity updateEntity = setUpdateLocation(existingLocation, updateLocation);
         log.info("Запрос на обновление локации '{}' c id={} выполнен", updateEntity.getName(), updateEntity.getId());
-        return locationConverter.convertToDomain(updateEntity);
+        return locationConverter.convertEntityToResponseDto(updateEntity);
     }
 
     @Transactional(readOnly = true)
-    public Location findByIdLocation(Integer id) {
+    public ResponseLocationDto findByIdLocation(Integer id) {
         log.info("Запрос на поиск локации у сервиса");
         log.info("Запрос на поиск локации у сервиса закончен");
-        return locationConverter.convertToDomain(checkFindById(id));
+        return locationConverter.convertEntityToResponseDto(checkFindById(id));
     }
 
     @Transactional
@@ -67,12 +72,12 @@ public class LocationService {
     }
 
     @Transactional(readOnly = true)
-    public List<Location> getAllLocations() {
+    public List<ResponseLocationDto> getAllLocations() {
         log.info("Запрос на получение списка всех локаций у сервиса");
-        List<Location> allLocations = locationRepository
+        List<ResponseLocationDto> allLocations = locationRepository
                 .findAll()
                 .stream()
-                .map(locationConverter::convertToDomain).toList();
+                .map(locationConverter::convertEntityToResponseDto).toList();
         log.info("Найдено локаций:{}", allLocations.size());
         return allLocations;
     }
@@ -89,12 +94,12 @@ public class LocationService {
                         });
     }
 
-    private void checkLocationCapacity(Location locationDomain, LocationEntity updateLocation) {
-        if (locationDomain.getCapacity() < updateLocation.getCapacity()) {
+    private void checkLocationCapacity(LocationEntity existingLocation, Location newLocationData) {
+        if (newLocationData.getCapacity() < existingLocation.getCapacity()) {
             log.warn("Произошла ошибка, вместимость у локации '{}' с id={} должна быть не меньше {}",
-                    updateLocation.getName(), updateLocation.getId(), updateLocation.getCapacity());
+                    newLocationData.getName(), newLocationData.getId(), newLocationData.getCapacity());
             throw new LocationCapacityException("У локации '%s' вместительность %d, нельзя ставить меньшее число"
-                    .formatted(updateLocation.getName(), updateLocation.getCapacity()));
+                    .formatted(newLocationData.getName(), newLocationData.getCapacity()));
         }
 
     }
@@ -111,12 +116,12 @@ public class LocationService {
         }
     }
 
-    private LocationEntity setUpdateLocation(LocationEntity oldLocation, Location updateLocation) {
-        oldLocation.setName(updateLocation.getName());
-        oldLocation.setAddress(updateLocation.getAddress());
-        oldLocation.setCapacity(updateLocation.getCapacity());
-        oldLocation.setDescription(updateLocation.getDescription());
-        return locationRepository.save(oldLocation);
+    private LocationEntity setUpdateLocation(LocationEntity existingEntity, Location updatedData) {
+        existingEntity.setName(updatedData.getName());
+        existingEntity.setAddress(updatedData.getAddress());
+        existingEntity.setCapacity(updatedData.getCapacity());
+        existingEntity.setDescription(updatedData.getDescription());
+        return locationRepository.save(existingEntity);
     }
 }
 

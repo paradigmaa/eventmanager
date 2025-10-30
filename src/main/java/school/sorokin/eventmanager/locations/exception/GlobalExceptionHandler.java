@@ -5,12 +5,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import school.sorokin.eventmanager.locations.dto.ServerErrorDto;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import school.sorokin.eventmanager.locations.dto.ServerError;
 
 import java.time.LocalDateTime;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -18,56 +20,69 @@ public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ServerErrorDto> handlerValidationException(MethodArgumentNotValidException e) {
-        String detail = detailBindingResultHelper(e);
-        log.warn("Ошибка валидации запроса: {}", detail);
-        return createErrorMessageAndResponseEntity("Ошибка валидации запроса",
-                detail, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ValidationErrorResponse> handlerValidationException(MethodArgumentNotValidException e) {
+        List<FieldError> listError = detailBindingResultHelper(e);
+        log.warn("Ошибка валидации тела запроса: {}", listError);
+
+        ValidationErrorResponse response = new ValidationErrorResponse(
+                "Ошибка валидации запроса",
+                listError,
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ServerErrorDto> handlerServerErrorException(Exception e) {
-        log.error("Внутренняя ошибка сервера: {}", e.getMessage(), e);
-        return createErrorMessageAndResponseEntity("Ошибка сервера",
-                e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ServerError> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException e) {
+        String message = String.format("Параметр '%s' имеет неверный тип. Ожидается: %s",
+                e.getName(), e.getRequiredType().getSimpleName());
+
+        log.warn("Ошибка типа параметра: {}", message);
+        return createServerErrorResponse("Неверный тип параметра", message, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ServerError> handleMissingParams(MissingServletRequestParameterException e) {
+        String message = String.format("Обязательный параметр '%s' отсутствует", e.getParameterName());
+
+        log.warn("Отсутствует обязательный параметр: {}", message);
+        return createServerErrorResponse("Отсутствует обязательный параметр", message, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NotFoundLocationException.class)
-    public ResponseEntity<ServerErrorDto> handlerNotFoundLocationException(NotFoundLocationException e) {
+    public ResponseEntity<ServerError> handlerNotFoundLocationException(NotFoundLocationException e) {
         log.warn("Локация не найдена: {}", e.getMessage());
-        return createErrorMessageAndResponseEntity("Сущность не найдена",
-                e.getMessage(), HttpStatus.NOT_FOUND);
+        return createServerErrorResponse("Сущность не найдена", e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(LocationCapacityException.class)
-    public ResponseEntity<ServerErrorDto> handlerLocationCapacityException(LocationCapacityException e) {
+    public ResponseEntity<ServerError> handlerLocationCapacityException(LocationCapacityException e) {
         log.warn("Ошибка вместимости локации: {}", e.getMessage());
-        return createErrorMessageAndResponseEntity("Некорректная вместимость",
-                e.getMessage(), HttpStatus.BAD_REQUEST);
+        return createServerErrorResponse("Некорректная вместимость", e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(LocationTakenNameException.class)
-    public ResponseEntity<ServerErrorDto> handlerLocationTakenNameException(LocationTakenNameException e) {
+    public ResponseEntity<ServerError> handlerLocationTakenNameException(LocationTakenNameException e) {
         log.warn("Попытка использовать занятое имя локации: {}", e.getMessage());
-        return createErrorMessageAndResponseEntity("Имя должно быть уникальным",
-                e.getMessage(), HttpStatus.BAD_REQUEST);
+        return createServerErrorResponse("Имя должно быть уникальным", e.getMessage(), HttpStatus.CONFLICT);
     }
 
-    private String detailBindingResultHelper(MethodArgumentNotValidException e) {
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ServerError> handlerServerErrorException(Exception e) {
+        log.error("Внутренняя ошибка сервера: {}", e.getMessage(), e);
+        return createServerErrorResponse("Ошибка сервера",
+                "Произошла внутренняя ошибка сервера", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private List<FieldError> detailBindingResultHelper(MethodArgumentNotValidException e){
         return e.getBindingResult().getFieldErrors().stream()
-                .map(errors -> errors.getField() + ":" + errors.getDefaultMessage())
-                .collect(Collectors.joining(","));
+                .map(error -> new FieldError(error.getField(), error.getDefaultMessage()))
+                .toList();
     }
 
-    private ResponseEntity<ServerErrorDto> createErrorMessageAndResponseEntity(String message, String detail, HttpStatus httpStatus) {
-        ServerErrorDto serverErrorDTO = new ServerErrorDto(
-                message,
-                detail,
-                LocalDateTime.now()
-        );
-        return ResponseEntity
-                .status(httpStatus)
-                .body(serverErrorDTO);
+    private ResponseEntity<ServerError> createServerErrorResponse(String message, String detailMessage, HttpStatus httpStatus) {
+        ServerError serverError = new ServerError(message, detailMessage, LocalDateTime.now());
+        return ResponseEntity.status(httpStatus).body(serverError);
     }
-
 }

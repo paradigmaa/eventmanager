@@ -7,7 +7,7 @@ import school.sorokin.eventmanager.locations.entity.LocationEntity;
 @Component
 public class LocationConverter {
 
-    public LocationEntity convertToEntity(Location locationDomain) {
+    public LocationEntity convertLocationToEntity(Location locationDomain) {
         return new LocationEntity(
                 locationDomain.getId(),
                 locationDomain.getName(),
@@ -17,13 +17,33 @@ public class LocationConverter {
         );
     }
 
-    public Location convertToDomain(LocationEntity locationEntity) {
+    public Location convertCreateDtoToLocation(CreatLocationDto newLocation) {
         return new Location(
-                locationEntity.getId(),
-                locationEntity.getName(),
-                locationEntity.getAddress(),
-                locationEntity.getCapacity(),
-                locationEntity.getDescription()
+                null,
+                newLocation.getName(),
+                newLocation.getAddress(),
+                newLocation.getCapacity(),
+                newLocation.getDescription()
+        );
+    }
+
+    public ResponseLocationDto convertEntityToResponseDto(LocationEntity newLocation) {
+        return new ResponseLocationDto(
+                newLocation.getId(),
+                newLocation.getName(),
+                newLocation.getAddress(),
+                newLocation.getCapacity(),
+                newLocation.getDescription()
+        );
+    }
+
+    public Location convertUpdateLocationDtoToLocation(UpdateLocationDto updateRequest) {
+        return new Location(
+                null,
+                updateRequest.getName(),
+                updateRequest.getAddress(),
+                updateRequest.getCapacity(),
+                updateRequest.getDescription()
         );
     }
 }
