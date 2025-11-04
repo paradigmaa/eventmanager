@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class ResponseLocationDto {
-    private  Integer id;
+    private Integer id;
 
     private String name;
 

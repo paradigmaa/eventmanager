@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import school.sorokin.eventmanager.locations.domain.Location;
 import school.sorokin.eventmanager.locations.dto.CreatLocationDto;
 import school.sorokin.eventmanager.locations.dto.ResponseLocationDto;
 import school.sorokin.eventmanager.locations.dto.UpdateLocationDto;
@@ -25,7 +24,7 @@ public class LocationController {
     private static final Logger log = LoggerFactory.getLogger(LocationController.class);
 
     @Autowired
-    public LocationController(LocationService locationService ) {
+    public LocationController(LocationService locationService) {
         this.locationService = locationService;
     }
 
@@ -42,7 +41,7 @@ public class LocationController {
     @PutMapping("/{id}")
     public ResponseEntity<ResponseLocationDto> updateLocation(@PathVariable("id") Integer id, @RequestBody @Valid UpdateLocationDto updateLocationDto) {
         log.info("PUT /locations/{} - Обновление локации:'{}'", id, updateLocationDto.getName());
-        ResponseLocationDto updatedLocation =  locationService.updateLocation(id, updateLocationDto);
+        ResponseLocationDto updatedLocation = locationService.updateLocation(id, updateLocationDto);
         log.info("PUT /locations/{} - Локация обновлена", id);
         return ResponseEntity.ok(updatedLocation);
     }
@@ -50,7 +49,7 @@ public class LocationController {
     @GetMapping("/{id}")
     public ResponseEntity<ResponseLocationDto> findLocationById(@PathVariable("id") Integer id) {
         log.info("GET /locations/{} - Получение локации", id);
-        ResponseLocationDto findLocal =  locationService.findByIdLocation(id);
+        ResponseLocationDto findLocal = locationService.findByIdLocation(id);
         log.info("GET /locations/{} - Локация '{}' получена", id, findLocal.getName());
         return ResponseEntity.ok(findLocal);
     }

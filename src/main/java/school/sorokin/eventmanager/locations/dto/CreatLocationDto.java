@@ -4,9 +4,6 @@ package school.sorokin.eventmanager.locations.dto;
 import jakarta.validation.constraints.*;
 
 public class CreatLocationDto {
-    @Null
-    private Integer id;
-
     @NotBlank(message = "Имя не может быть пустым")
     private String name;
 
@@ -26,20 +23,11 @@ public class CreatLocationDto {
 
     }
 
-    public CreatLocationDto(Integer id, String name, String address, Integer capacity, String description) {
-        this.id = id;
+    public CreatLocationDto(String name, String address, Integer capacity, String description) {
         this.name = name;
         this.address = address;
         this.capacity = capacity;
         this.description = description;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getName() {

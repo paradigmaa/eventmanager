@@ -1,4 +1,4 @@
-package school.sorokin.eventmanager.locations.exception;
+package school.sorokin.eventmanager.locations.exception.exceptionHandler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import school.sorokin.eventmanager.locations.dto.ServerError;
+import school.sorokin.eventmanager.locations.exception.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
