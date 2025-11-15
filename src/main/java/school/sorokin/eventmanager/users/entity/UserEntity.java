@@ -1,6 +1,8 @@
 package school.sorokin.eventmanager.users.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import school.sorokin.eventmanager.users.dto.RoleUsers;
 
 @Entity
@@ -11,10 +13,13 @@ public class UserEntity {
     private Long id;
 
     @Column(unique = true)
+    @NotBlank
     private String login;
 
+    @NotBlank
     private String password;
 
+    @NotNull
     private Integer age;
 
     private String roleUsers;

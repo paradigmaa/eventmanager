@@ -1,5 +1,8 @@
 package school.sorokin.eventmanager.users.controller;
 
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +18,15 @@ public class UserController {
 
     private final UserService userService;
 
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
+
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
     @PostMapping
-    public ResponseEntity<UserResponseDto> registrationUser(@RequestBody RegistrationUserDto registrationUserDto){
+    public ResponseEntity<UserResponseDto> registrationUser(@RequestBody @Valid RegistrationUserDto registrationUserDto){
         UserResponseDto newUser = userService.registrationUser(registrationUserDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(newUser);
