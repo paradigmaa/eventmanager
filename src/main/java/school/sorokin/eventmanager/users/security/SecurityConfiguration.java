@@ -1,5 +1,6 @@
 package school.sorokin.eventmanager.users.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -19,7 +20,14 @@ import java.beans.Encoder;
 @Configuration
 public class SecurityConfiguration {
 
+    @Autowired
     private CustomUserDetailService userDetailService;
+
+    @Autowired
+    private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
+    @Autowired
+    private CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -33,6 +41,9 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.POST, "/users")
                                 .permitAll()
                                 .anyRequest().authenticated())
+                .exceptionHandling(exception ->
+                        exception.authenticationEntryPoint(customAuthenticationEntryPoint)
+                                .accessDeniedHandler(customAccessDeniedHandler))
                 .httpBasic(Customizer.withDefaults())
                 .build();
     }
