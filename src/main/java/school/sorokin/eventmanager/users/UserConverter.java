@@ -1,7 +1,7 @@
 package school.sorokin.eventmanager.users;
 
 import org.springframework.stereotype.Component;
-import school.sorokin.eventmanager.users.controller.RegistrationUserDto;
+import school.sorokin.eventmanager.users.controller.RegistrationUserRequestDto;
 import school.sorokin.eventmanager.users.controller.UserResponseDto;
 import school.sorokin.eventmanager.users.controller.User;
 import school.sorokin.eventmanager.users.dto.RoleUsers;
@@ -9,12 +9,12 @@ import school.sorokin.eventmanager.users.entity.UserEntity;
 
 @Component
 public class UserConverter {
-    public User convertRegistrationUserDtoToUser(RegistrationUserDto registrationUserDto) {
+    public User convertRegistrationUserDtoToUser(RegistrationUserRequestDto registrationUserRequestDto) {
         return new User(
                 null,
-                registrationUserDto.login(),
-                registrationUserDto.password(),
-                registrationUserDto.age()
+                registrationUserRequestDto.login(),
+                registrationUserRequestDto.password(),
+                registrationUserRequestDto.age()
         );
     }
 

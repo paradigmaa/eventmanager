@@ -3,7 +3,7 @@ package school.sorokin.eventmanager.users.service;
 
 import org.springframework.stereotype.Service;
 import school.sorokin.eventmanager.users.UserConverter;
-import school.sorokin.eventmanager.users.controller.RegistrationUserDto;
+import school.sorokin.eventmanager.users.controller.RegistrationUserRequestDto;
 import school.sorokin.eventmanager.users.controller.UserResponseDto;
 import school.sorokin.eventmanager.users.controller.User;
 import school.sorokin.eventmanager.users.entity.UserEntity;
@@ -22,11 +22,11 @@ public class UserService {
         this.userConverter = userConverter;
     }
 
-    public UserResponseDto registrationUser(RegistrationUserDto registrationUserDto) {
-        if(userRepository.existsByLogin(registrationUserDto.login())){
+    public UserResponseDto registrationUser(RegistrationUserRequestDto registrationUserRequestDto) {
+        if(userRepository.existsByLogin(registrationUserRequestDto.login())){
             throw new LoginTakenNameException("Такой логин уже существует");
         }
-        User newUser = userConverter.convertRegistrationUserDtoToUser(registrationUserDto);
+        User newUser = userConverter.convertRegistrationUserDtoToUser(registrationUserRequestDto);
         UserEntity saveUser = userRepository.save(userConverter.convertUserToUserEntity(newUser));
         return userConverter.convertUserEntityToUserResponseDto(saveUser);
     }

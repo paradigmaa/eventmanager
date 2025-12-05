@@ -26,9 +26,16 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponseDto> registrationUser(@RequestBody @Valid RegistrationUserDto registrationUserDto){
-        UserResponseDto newUser = userService.registrationUser(registrationUserDto);
+    public ResponseEntity<UserResponseDto> registrationUser(@RequestBody @Valid RegistrationUserRequestDto registrationUserRequestDto){
+        UserResponseDto newUser = userService.registrationUser(registrationUserRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(newUser);
     }
+
+    @PostMapping("/auth")
+    public ResponseEntity<JwtTokenResponse> authenticate(
+            @RequestBody @Valid SignInUserRequestDto signInUserRequestDto){
+
+    }
+
 }
