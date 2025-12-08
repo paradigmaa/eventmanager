@@ -3,7 +3,7 @@ package school.sorokin.eventmanager.users.service;
 
 import org.springframework.stereotype.Service;
 import school.sorokin.eventmanager.users.UserConverter;
-import school.sorokin.eventmanager.users.controller.RegistrationUserRequestDto;
+import school.sorokin.eventmanager.users.security.jwt.RegistrationUserRequestDto;
 import school.sorokin.eventmanager.users.controller.UserResponseDto;
 import school.sorokin.eventmanager.users.controller.User;
 import school.sorokin.eventmanager.users.entity.UserEntity;
