@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import school.sorokin.eventmanager.users.dto.SignInUserRequestDto;
+import school.sorokin.eventmanager.users.dto.UserResponseDto;
 import school.sorokin.eventmanager.users.security.jwt.JwtAuthenticationService;
 import school.sorokin.eventmanager.users.security.jwt.JwtTokenResponse;
 import school.sorokin.eventmanager.users.security.jwt.RegistrationUserRequestDto;
@@ -41,7 +43,6 @@ public class UserController {
     @PostMapping("/auth")
     public ResponseEntity<JwtTokenResponse> authenticate(
             @RequestBody @Valid SignInUserRequestDto signInUserRequestDto) {
-
         var token = jwtAuthenticationService.authenticateUser(signInUserRequestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new JwtTokenResponse(token));

@@ -16,10 +16,7 @@ public class UserEntity {
     private String login;
 
     @NotBlank
-    private String password;
-
-    @NotNull
-    private Integer age;
+    private String passwordHash;
 
     private String roleUsers;
 
@@ -27,11 +24,9 @@ public class UserEntity {
 
     }
 
-    public UserEntity(Long id, String login, String password, Integer age, String roleUsers) {
+    public UserEntity(Long id, String login, String passwordHash, String roleUsers) {
         this.id = id;
         this.login = login;
-        this.password = password;
-        this.age = age;
         this.roleUsers = roleUsers;
     }
 
@@ -51,20 +46,12 @@ public class UserEntity {
         this.login = login;
     }
 
-    public String getPassword() {
-        return password;
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     public String getRoleUsers() {

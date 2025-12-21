@@ -1,4 +1,4 @@
-package school.sorokin.eventmanager.users.controller;
+package school.sorokin.eventmanager.users.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

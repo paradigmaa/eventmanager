@@ -1,4 +1,4 @@
-package school.sorokin.eventmanager.users.controller;
+package school.sorokin.eventmanager.users.dto;
 
 
 public record UserResponseDto(
@@ -8,8 +8,6 @@ public record UserResponseDto(
         String login,
 
         String password,
-
-        Integer age,
 
         String role
 ) {

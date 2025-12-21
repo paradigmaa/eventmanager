@@ -3,8 +3,8 @@ package school.sorokin.eventmanager.users;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import school.sorokin.eventmanager.users.security.jwt.RegistrationUserRequestDto;
-import school.sorokin.eventmanager.users.controller.UserResponseDto;
-import school.sorokin.eventmanager.users.controller.User;
+import school.sorokin.eventmanager.users.dto.UserResponseDto;
+import school.sorokin.eventmanager.users.domain.User;
 import school.sorokin.eventmanager.users.dto.RoleUsers;
 import school.sorokin.eventmanager.users.entity.UserEntity;
 
@@ -22,8 +22,7 @@ public class UserConverter {
         return new User(
                 null,
                 registrationUserRequestDto.login(),
-                registrationUserRequestDto.password(),
-                registrationUserRequestDto.age()
+                registrationUserRequestDto.password()
         );
     }
 
@@ -32,7 +31,6 @@ public class UserConverter {
                 null,
                 newUser.login(),
                 passwordEncoder.encode(newUser.password()),
-                newUser.age(),
                 RoleUsers.USER.toString()
         );
     }
@@ -41,8 +39,7 @@ public class UserConverter {
         return new UserResponseDto(
                 saveUser.getId(),
                 saveUser.getLogin(),
-                saveUser.getPassword(),
-                saveUser.getAge(),
+                saveUser.getPasswordHash(),
                 saveUser.getRoleUsers()
         );
     }
