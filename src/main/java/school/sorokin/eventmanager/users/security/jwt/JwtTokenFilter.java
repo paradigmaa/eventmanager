@@ -8,9 +8,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import school.sorokin.eventmanager.users.controller.UserResponseDto;
+import school.sorokin.eventmanager.users.security.CustomUserDetailService;
 import school.sorokin.eventmanager.users.service.UserService;
 
 import java.io.IOException;
@@ -22,12 +24,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private final JwtTokenManager jwtTokenManager;
 
-    private final UserService userService;
+    private final CustomUserDetailService customUserDetailService;
 
-
-    public JwtTokenFilter(JwtTokenManager jwtTokenManager, UserService userService) {
+    public JwtTokenFilter(JwtTokenManager jwtTokenManager, CustomUserDetailService customUserDetailService) {
         this.jwtTokenManager = jwtTokenManager;
-        this.userService = userService;
+        this.customUserDetailService = customUserDetailService;
     }
 
     @Override
@@ -39,18 +40,31 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        var jwtToken = authorizationHeader.substring(7);
-        var loginFromToken = jwtTokenManager.getLoginFromToken(jwtToken);
 
-        UserResponseDto userResponseDto = userService.findByLogin(loginFromToken);
+        String jwtToken = authorizationHeader.substring(7);
 
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                new UsernamePasswordAuthenticationToken(userResponseDto,
-                        null,
-                        List.of(new SimpleGrantedAuthority(userResponseDto.role())));
-        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-        filterChain.doFilter(request,response);
+        if (!jwtTokenManager.validateToken(jwtToken)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
+
+        try {
+            String loginFromToken = jwtTokenManager.getLoginFromToken(jwtToken);
+
+            UserDetails userDetails = customUserDetailService.loadUserByUsername(loginFromToken);
+
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                    userDetails,
+                    null,
+                    userDetails.getAuthorities()
+            );
+
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        } catch (Exception e) {
+            return;
+        }
+        filterChain.doFilter(request, response);
 
     }
 }

@@ -43,8 +43,20 @@ public class JwtTokenManager {
         return Jwts.parser()
                 .verifyWith(key)
                 .build()
-                .parseEncryptedClaims(jwt)
+                .parseSignedClaims(jwt)
                 .getPayload()
                 .getSubject();
+    }
+
+    public boolean validateToken(String jwt) {
+        try {
+            Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(jwt);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
