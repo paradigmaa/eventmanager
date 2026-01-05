@@ -40,7 +40,7 @@ public class UserConverter {
                 saveUser.getId(),
                 saveUser.getLogin(),
                 saveUser.getPasswordHash(),
-                saveUser.getRoleUsers()
+                saveUser.getRole()
         );
     }
 }

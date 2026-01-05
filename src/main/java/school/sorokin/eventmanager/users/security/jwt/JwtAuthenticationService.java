@@ -28,4 +28,6 @@ public class JwtAuthenticationService {
         return jwtTokenManager.generateToken(signInUserRequestDto.login());
 
     }
+
+
 }

@@ -18,16 +18,17 @@ public class UserEntity {
     @NotBlank
     private String passwordHash;
 
-    private String roleUsers;
+    private String role;
 
     public UserEntity() {
 
     }
 
-    public UserEntity(Long id, String login, String passwordHash, String roleUsers) {
+    public UserEntity(Long id, String login, String passwordHash, String role) {
         this.id = id;
         this.login = login;
-        this.roleUsers = roleUsers;
+        this.passwordHash = passwordHash;
+        this.role = role;
     }
 
     public Long getId() {
@@ -54,11 +55,11 @@ public class UserEntity {
         this.passwordHash = passwordHash;
     }
 
-    public String getRoleUsers() {
-        return roleUsers;
+    public String getRole() {
+        return role;
     }
 
-    public void setRoleUsers(String roleUsers) {
-        this.roleUsers = roleUsers;
+    public void setRole(String role) {
+        this.role = role;
     }
 }

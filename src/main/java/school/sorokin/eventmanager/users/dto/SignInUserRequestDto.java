@@ -10,7 +10,7 @@ public record SignInUserRequestDto(
         String login,
 
         @NotBlank
-        @Min(5)
+        @Size(min = 5)
         String password
 ) {
 }

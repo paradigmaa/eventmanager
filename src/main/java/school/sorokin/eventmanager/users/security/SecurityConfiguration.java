@@ -7,19 +7,15 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import school.sorokin.eventmanager.users.security.jwt.JwtTokenFilter;
-
-import java.beans.Encoder;
 
 @Configuration
 public class SecurityConfiguration {
@@ -49,6 +45,17 @@ public class SecurityConfiguration {
                                 .permitAll()
                                 .requestMatchers(HttpMethod.POST, "/users/auth")
                                 .permitAll()
+                                .requestMatchers(
+                                        "/openapi.yaml",
+                                        "/openapi.yml",
+                                        "/swagger-ui/**",
+                                        "/swagger-ui.html",
+                                        "/v3/api-docs/**",
+                                        "/v3/api-docs",
+                                        "/api-docs/**",
+                                        "/webjars/**",
+                                        "/swagger-resources/**"
+                                ).permitAll()
                                 .anyRequest().authenticated())
                 .exceptionHandling(exception ->
                         exception.authenticationEntryPoint(customAuthenticationEntryPoint)
