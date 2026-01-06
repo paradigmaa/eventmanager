@@ -45,6 +45,18 @@ public class SecurityConfiguration {
                                 .permitAll()
                                 .requestMatchers(HttpMethod.POST, "/users/auth")
                                 .permitAll()
+                                .requestMatchers(HttpMethod.GET, "/users/{id}")
+                                .hasAuthority("ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/locations")
+                                .hasAnyAuthority("ADMIN", "USER")
+                                .requestMatchers(HttpMethod.POST, "/locations")
+                                .hasAuthority("ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, "/locations/{id}")
+                                .hasAuthority("ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/locations/{id}")
+                                .hasAnyAuthority("ADMIN", "USER")
+                                .requestMatchers(HttpMethod.PUT, "/locations/{id}")
+                                .hasAuthority("ADMIN")
                                 .requestMatchers(
                                         "/openapi.yaml",
                                         "/openapi.yml",

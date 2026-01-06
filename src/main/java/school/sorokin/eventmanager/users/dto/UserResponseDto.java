@@ -9,6 +9,8 @@ public record UserResponseDto(
 
         String password,
 
+        Integer age,
+
         String role
 ) {
 

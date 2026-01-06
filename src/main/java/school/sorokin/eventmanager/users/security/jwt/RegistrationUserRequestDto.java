@@ -13,6 +13,8 @@ public record RegistrationUserRequestDto(
 
         @NotBlank
         @Size(min= 5)
-        String password
+        String password,
+
+        Integer age
 ) {
 }

@@ -14,10 +14,10 @@ import school.sorokin.eventmanager.locations.exception.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@ControllerAdvice
-public class GlobalExceptionHandler {
+@ControllerAdvice(basePackages = "school/sorokin/eventmanager/locations")
+public class LocationExceptionHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(LocationExceptionHandler.class);
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ValidationErrorResponse> handlerValidationException(MethodArgumentNotValidException e) {

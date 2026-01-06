@@ -5,6 +5,6 @@ public record User(
 
         String login,
 
-        String password
-) {
+        String password,
+        Integer age) {
 }

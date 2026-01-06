@@ -22,7 +22,8 @@ public class UserConverter {
         return new User(
                 null,
                 registrationUserRequestDto.login(),
-                registrationUserRequestDto.password()
+                registrationUserRequestDto.password(),
+                registrationUserRequestDto.age()
         );
     }
 
@@ -31,6 +32,7 @@ public class UserConverter {
                 null,
                 newUser.login(),
                 passwordEncoder.encode(newUser.password()),
+                newUser.age(),
                 RoleUsers.USER.toString()
         );
     }
@@ -40,6 +42,7 @@ public class UserConverter {
                 saveUser.getId(),
                 saveUser.getLogin(),
                 saveUser.getPasswordHash(),
+                saveUser.getAge(),
                 saveUser.getRole()
         );
     }
