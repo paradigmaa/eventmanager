@@ -15,6 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
+import school.sorokin.eventmanager.users.exception.exceptionHandler.CustomAccessDeniedHandler;
+import school.sorokin.eventmanager.users.exception.exceptionHandler.CustomAuthenticationEntryPoint;
 import school.sorokin.eventmanager.users.security.jwt.JwtTokenFilter;
 
 @Configuration

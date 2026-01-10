@@ -7,8 +7,6 @@ public record UserResponseDto(
 
         String login,
 
-        String password,
-
         Integer age,
 
         String role

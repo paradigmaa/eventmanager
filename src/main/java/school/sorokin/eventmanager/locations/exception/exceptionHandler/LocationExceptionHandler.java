@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import school.sorokin.eventmanager.locations.exception.*;
+import school.sorokin.eventmanager.utils.exceptionUtils.FieldError;
+import school.sorokin.eventmanager.utils.exceptionUtils.ServerError;
+import school.sorokin.eventmanager.utils.exceptionUtils.ValidationErrorResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,7 +28,7 @@ public class LocationExceptionHandler {
         log.warn("Ошибка валидации тела запроса: {}", listError);
 
         ValidationErrorResponse response = new ValidationErrorResponse(
-                "Ошибка валидации запроса",
+                "Ошибка валидации запроса локации",
                 listError,
                 LocalDateTime.now()
         );
