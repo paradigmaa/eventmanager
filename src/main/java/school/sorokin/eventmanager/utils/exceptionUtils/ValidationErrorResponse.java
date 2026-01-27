@@ -1,4 +1,4 @@
-package school.sorokin.eventmanager.locations.exception.exceptionHandler;
+package school.sorokin.eventmanager.utils.exceptionUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;

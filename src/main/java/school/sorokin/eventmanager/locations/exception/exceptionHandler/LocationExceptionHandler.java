@@ -10,14 +10,17 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import school.sorokin.eventmanager.locations.exception.*;
+import school.sorokin.eventmanager.utils.exceptionUtils.FieldError;
+import school.sorokin.eventmanager.utils.exceptionUtils.ServerError;
+import school.sorokin.eventmanager.utils.exceptionUtils.ValidationErrorResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@ControllerAdvice
-public class GlobalExceptionHandler {
+@ControllerAdvice(basePackages = "school/sorokin/eventmanager/locations")
+public class LocationExceptionHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(LocationExceptionHandler.class);
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ValidationErrorResponse> handlerValidationException(MethodArgumentNotValidException e) {
@@ -25,7 +28,7 @@ public class GlobalExceptionHandler {
         log.warn("Ошибка валидации тела запроса: {}", listError);
 
         ValidationErrorResponse response = new ValidationErrorResponse(
-                "Ошибка валидации запроса",
+                "Ошибка валидации запроса локации",
                 listError,
                 LocalDateTime.now()
         );
