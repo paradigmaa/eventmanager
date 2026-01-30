@@ -5,6 +5,10 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import school.sorokin.eventmanager.events.entity.EventEntity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "location")
@@ -30,6 +34,10 @@ public class LocationEntity {
     @Column(name = "description")
     @NotBlank(message = "описание не может быть пустым")
     private String description;
+
+    @OneToMany(mappedBy = "location")
+    private List<EventEntity> eventEntity = new ArrayList<>();
+
 
     public LocationEntity(Integer id, String name, String address, Integer capacity, String description) {
         this.id = id;

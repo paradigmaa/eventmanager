@@ -6,5 +6,6 @@ public record User(
         String login,
 
         String password,
+
         Integer age) {
 }

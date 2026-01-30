@@ -3,6 +3,11 @@ package school.sorokin.eventmanager.users.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import school.sorokin.eventmanager.events.entity.EventEntity;
+import school.sorokin.eventmanager.events.entity.RegistrationEntity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -21,6 +26,12 @@ public class UserEntity {
     private Integer age;
 
     private String role;
+
+    @OneToMany(mappedBy = "owner")
+    private List<EventEntity> ownedEvents  = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<RegistrationEntity> registrations = new ArrayList<>();
 
     public UserEntity() {
 
