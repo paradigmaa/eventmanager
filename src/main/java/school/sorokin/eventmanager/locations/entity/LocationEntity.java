@@ -15,7 +15,7 @@ import java.util.List;
 public class LocationEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "name")
     @NotBlank(message = "ия не должно быть пустым")
@@ -39,7 +39,7 @@ public class LocationEntity {
     private List<EventEntity> eventEntity = new ArrayList<>();
 
 
-    public LocationEntity(Integer id, String name, String address, Integer capacity, String description) {
+    public LocationEntity(Long id, String name, String address, Integer capacity, String description) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -51,7 +51,7 @@ public class LocationEntity {
 
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
@@ -71,7 +71,7 @@ public class LocationEntity {
         return description;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

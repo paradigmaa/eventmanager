@@ -7,5 +7,4 @@ import school.sorokin.eventmanager.events.entity.EventEntity;
 @Repository
 public interface EventRepository extends JpaRepository<EventEntity, Integer> {
 
-
 }

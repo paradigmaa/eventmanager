@@ -6,9 +6,9 @@ import school.sorokin.eventmanager.locations.entity.LocationEntity;
 
 
 @Repository
-public interface LocationRepository extends JpaRepository<LocationEntity, Integer> {
+public interface LocationRepository extends JpaRepository<LocationEntity, Long> {
 
     boolean existsByName(String name);
 
-    boolean existsByNameAndIdNot(String name, Integer excludeId);
+    boolean existsByNameAndIdNot(String name, Long excludeId);
 }

@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class Location {
 
-    private final Integer id;
+    private final Long id;
 
     private final String name;
 
@@ -15,7 +15,7 @@ public class Location {
     private final String description;
 
 
-    public Location(Integer id, String name, String address, Integer capacity, String description) {
+    public Location(Long id, String name, String address, Integer capacity, String description) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -31,7 +31,7 @@ public class Location {
         this.description = location.getDescription();
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 

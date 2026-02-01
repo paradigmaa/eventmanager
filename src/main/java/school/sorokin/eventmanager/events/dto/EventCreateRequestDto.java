@@ -1,20 +1,24 @@
 package school.sorokin.eventmanager.events.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.math.BigDecimal;
 
 public record EventCreateRequestDto(
 
-         String name,
-
-         Integer maxPlaces,
-
-         String date,
-
-         BigDecimal cost,
-
-         Integer duration,
-
-         Integer locationId
+        @NotBlank
+        String name,
+        @NotNull
+        Integer maxPlaces,
+        @NotBlank
+        String date,
+        @NotNull
+        BigDecimal cost,
+        @NotNull
+        Integer duration,
+        @NotNull
+        Long locationId
 ) {
 
 }

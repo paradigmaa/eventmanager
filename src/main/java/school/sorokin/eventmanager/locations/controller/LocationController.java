@@ -39,7 +39,7 @@ public class LocationController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseLocationDto> updateLocation(@PathVariable("id") Integer id, @RequestBody @Valid UpdateLocationDto updateLocationDto) {
+    public ResponseEntity<ResponseLocationDto> updateLocation(@PathVariable("id") Long id, @RequestBody @Valid UpdateLocationDto updateLocationDto) {
         log.info("PUT /locations/{} - Обновление локации:'{}'", id, updateLocationDto.getName());
         ResponseLocationDto updatedLocation = locationService.updateLocation(id, updateLocationDto);
         log.info("PUT /locations/{} - Локация обновлена", id);
@@ -47,7 +47,7 @@ public class LocationController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseLocationDto> findLocationById(@PathVariable("id") Integer id) {
+    public ResponseEntity<ResponseLocationDto> findLocationById(@PathVariable("id") Long id) {
         log.info("GET /locations/{} - Получение локации", id);
         ResponseLocationDto findLocal = locationService.findByIdLocation(id);
         log.info("GET /locations/{} - Локация '{}' получена", id, findLocal.getName());
@@ -61,7 +61,7 @@ public class LocationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLocation(@PathVariable("id") Integer id) {
+    public ResponseEntity<Void> deleteLocation(@PathVariable("id") Long id) {
         log.info("DELETE /locations - удаление локации по id={}", id);
         locationService.deleteLocation(id);
         log.info("DELETE /locations - локация по id={} удалена", id);

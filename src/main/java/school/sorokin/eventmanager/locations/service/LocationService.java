@@ -45,7 +45,7 @@ public class LocationService {
     }
 
     @Transactional
-    public ResponseLocationDto updateLocation(Integer id, UpdateLocationDto updateRequest) {
+    public ResponseLocationDto updateLocation(Long id, UpdateLocationDto updateRequest) {
         log.info("Запрос на обновление локации без изменения имени");
         LocationEntity existingLocation = checkFindById(id);
         Location updateLocation = locationConverter.convertUpdateLocationDtoToLocation(updateRequest);
@@ -57,14 +57,14 @@ public class LocationService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseLocationDto findByIdLocation(Integer id) {
+    public ResponseLocationDto findByIdLocation(Long id) {
         log.info("Запрос на поиск локации у сервиса");
         log.info("Запрос на поиск локации у сервиса закончен");
         return locationConverter.convertEntityToResponseDto(checkFindById(id));
     }
 
     @Transactional
-    public void deleteLocation(Integer id) {
+    public void deleteLocation(Long id) {
         log.info("Запрос на удаление локации по id={} у сервиса", id);
         checkFindById(id);
         locationRepository.deleteById(id);
@@ -82,7 +82,7 @@ public class LocationService {
         return allLocations;
     }
 
-    private LocationEntity checkFindById(Integer id) {
+    private LocationEntity checkFindById(Long id) {
         log.info("Запрос на получение локации по id={} у сервиса", id);
         return locationRepository.findById(id)
                 .orElseThrow(
@@ -104,7 +104,7 @@ public class LocationService {
 
     }
 
-    private void checkLocationName(String name, Integer excludeId) {
+    private void checkLocationName(String name, Long excludeId) {
         boolean nameExists;
         if (excludeId == null) {
             nameExists = locationRepository.existsByName(name);
