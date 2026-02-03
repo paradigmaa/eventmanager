@@ -26,7 +26,7 @@ public class EventServiceCheckerUserAndLocation {
         this.locationRepository = locationRepository;
     }
 
-    public UserEntity checkToFindUser(){
+    public UserEntity checkToFindUser() {
         Long ownerId = ((CustomUserDetails) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal()).getId();

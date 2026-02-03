@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
-public record EventCreateRequestDto(
+public record EventUpdateRequestDto(
         @NotBlank
         String name,
         @NotNull
@@ -19,5 +19,4 @@ public record EventCreateRequestDto(
         @NotNull
         Long locationId
 ) {
-
 }

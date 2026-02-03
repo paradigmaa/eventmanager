@@ -1,11 +1,17 @@
 package school.sorokin.eventmanager.events.domain;
 
+import school.sorokin.eventmanager.events.entity.EventStatus;
+import school.sorokin.eventmanager.events.entity.RegistrationEntity;
+import school.sorokin.eventmanager.locations.entity.LocationEntity;
+import school.sorokin.eventmanager.users.entity.UserEntity;
+
 import java.math.BigDecimal;
+import java.util.List;
 
 public record Event(
-        String name,
+        Long id,
 
-        Integer maxPlaces,
+        String name,
 
         String date,
 
@@ -13,6 +19,14 @@ public record Event(
 
         Integer duration,
 
-        Long locationId
+        Integer maxPlaces,
+
+        UserEntity owner,
+
+        LocationEntity location,
+
+        List<RegistrationEntity> registrations,
+
+        EventStatus status
 ) {
 }

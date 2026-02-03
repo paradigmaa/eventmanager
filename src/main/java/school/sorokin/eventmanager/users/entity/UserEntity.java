@@ -84,4 +84,20 @@ public class UserEntity {
     public void setRole(String role) {
         this.role = role;
     }
+
+    public List<EventEntity> getOwnedEvents() {
+        return ownedEvents;
+    }
+
+    public void setOwnedEvents(List<EventEntity> ownedEvents) {
+        this.ownedEvents = ownedEvents;
+    }
+
+    public List<RegistrationEntity> getRegistrations() {
+        return registrations;
+    }
+
+    public void setRegistrations(List<RegistrationEntity> registrations) {
+        this.registrations = registrations;
+    }
 }

@@ -5,7 +5,7 @@ public enum EventStatus {
 
     STARTED,
 
-    CLOSED,
+    CANCELED,
 
     FINISHED
 }
