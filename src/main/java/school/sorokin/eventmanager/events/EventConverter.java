@@ -3,14 +3,12 @@ package school.sorokin.eventmanager.events;
 import org.springframework.stereotype.Component;
 import school.sorokin.eventmanager.events.domain.Event;
 import school.sorokin.eventmanager.events.dto.EventCreateRequestDto;
-import school.sorokin.eventmanager.events.dto.EventDto;
-import school.sorokin.eventmanager.events.dto.EventUpdateRequestDto;
+import school.sorokin.eventmanager.events.dto.EventResponseDto;
 import school.sorokin.eventmanager.events.entity.EventEntity;
 import school.sorokin.eventmanager.events.entity.EventStatus;
 import school.sorokin.eventmanager.locations.entity.LocationEntity;
 import school.sorokin.eventmanager.users.entity.UserEntity;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -22,7 +20,7 @@ public class EventConverter {
         return new Event(
                 null,
                 eventCreateRequestDto.name(),
-                eventCreateRequestDto.date(),
+                eventCreateRequestDto.dateTime(),
                 eventCreateRequestDto.cost(),
                 eventCreateRequestDto.duration(),
                 eventCreateRequestDto.maxPlaces(),
@@ -38,7 +36,7 @@ public class EventConverter {
         return new EventEntity(
                 null,
                 domainEvent.name(),
-                domainEvent.date(),
+                domainEvent.dateTime(),
                 domainEvent.cost(),
                 domainEvent.duration(),
                 domainEvent.maxPlaces(),
@@ -54,7 +52,7 @@ public class EventConverter {
         return new Event(
                 eventEntity.getId(),
                 eventEntity.getName(),
-                eventEntity.getDate(),
+                eventEntity.getDateTime(),
                 eventEntity.getCost(),
                 eventEntity.getDuration(),
                 eventEntity.getMaxPlaces(),
@@ -67,14 +65,14 @@ public class EventConverter {
     }
 
 
-    public EventDto convertEvenEntityToEvenDto(EventEntity entityEvent) {
-        return new EventDto(
+    public EventResponseDto convertEvenEntityToEvenDto(EventEntity entityEvent) {
+        return new EventResponseDto(
                 entityEvent.getId(),
                 entityEvent.getName(),
                 entityEvent.getOwner().getId(),
                 entityEvent.getMaxPlaces(),
                 entityEvent.getRegistrations().size(),
-                entityEvent.getDate(),
+                entityEvent.getDateTime(),
                 entityEvent.getCost(),
                 entityEvent.getDuration(),
                 entityEvent.getLocation().getId(),

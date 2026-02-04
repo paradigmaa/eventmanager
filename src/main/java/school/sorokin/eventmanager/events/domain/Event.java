@@ -6,6 +6,7 @@ import school.sorokin.eventmanager.locations.entity.LocationEntity;
 import school.sorokin.eventmanager.users.entity.UserEntity;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record Event(
@@ -13,7 +14,7 @@ public record Event(
 
         String name,
 
-        String date,
+        LocalDateTime dateTime,
 
         BigDecimal cost,
 

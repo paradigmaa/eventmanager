@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public record EventUpdateRequestDto(
         @NotBlank
@@ -11,7 +12,7 @@ public record EventUpdateRequestDto(
         @NotNull
         Integer maxPlaces,
         @NotBlank
-        String date,
+        LocalDateTime dateTime,
         @NotNull
         BigDecimal cost,
         @NotNull

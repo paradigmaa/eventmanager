@@ -1,10 +1,12 @@
 package school.sorokin.eventmanager.events.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import school.sorokin.eventmanager.locations.entity.LocationEntity;
 import school.sorokin.eventmanager.users.entity.UserEntity;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,14 +17,19 @@ public class EventEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     private String name;
 
-    private String date;
+    @NotNull
+    private LocalDateTime dateTime;
 
+    @NotNull
     private BigDecimal cost;
 
+    @NotNull
     private Integer duration;
 
+    @NotNull
     private Integer maxPlaces;
 
     @ManyToOne
@@ -40,10 +47,10 @@ public class EventEntity {
     @Enumerated(EnumType.STRING)
     private EventStatus status;
 
-    public EventEntity(Long id, String name, String date, BigDecimal cost, Integer duration, Integer maxPlaces, UserEntity owner, LocationEntity location, List<RegistrationEntity> registrations, EventStatus status) {
+    public EventEntity(Long id, String name, LocalDateTime dateTime, BigDecimal cost, Integer duration, Integer maxPlaces, UserEntity owner, LocationEntity location, List<RegistrationEntity> registrations, EventStatus status) {
         this.id = id;
         this.name = name;
-        this.date = date;
+        this.dateTime = dateTime;
         this.cost = cost;
         this.duration = duration;
         this.maxPlaces = maxPlaces;
@@ -72,12 +79,12 @@ public class EventEntity {
         this.name = name;
     }
 
-    public String getDate() {
-        return date;
+    public LocalDateTime getDateTime() {
+        return dateTime;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
     }
 
     public BigDecimal getCost() {

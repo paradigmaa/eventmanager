@@ -47,6 +47,17 @@ public class SecurityConfiguration {
                                 .permitAll()
                                 .requestMatchers(HttpMethod.POST, "/users/auth")
                                 .permitAll()
+                                .requestMatchers(
+                                        "/openapi.yaml",
+                                        "/openapi.yml",
+                                        "/swagger-ui/**",
+                                        "/swagger-ui.html",
+                                        "/v3/api-docs/**",
+                                        "/v3/api-docs",
+                                        "/api-docs/**",
+                                        "/webjars/**",
+                                        "/swagger-resources/**"
+                                ).permitAll()
                                 .requestMatchers(HttpMethod.GET, "/users/{id}")
                                 .hasAuthority("ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/locations")
@@ -59,17 +70,24 @@ public class SecurityConfiguration {
                                 .hasAnyAuthority("ADMIN", "USER")
                                 .requestMatchers(HttpMethod.PUT, "/locations/{id}")
                                 .hasAuthority("ADMIN")
-                                .requestMatchers(
-                                        "/openapi.yaml",
-                                        "/openapi.yml",
-                                        "/swagger-ui/**",
-                                        "/swagger-ui.html",
-                                        "/v3/api-docs/**",
-                                        "/v3/api-docs",
-                                        "/api-docs/**",
-                                        "/webjars/**",
-                                        "/swagger-resources/**"
-                                ).permitAll()
+                                .requestMatchers(HttpMethod.POST, "/events")
+                                .hasAuthority("USER") // USER (ADMIN тоже USER, но проверка в сервисе)
+                                .requestMatchers(HttpMethod.GET, "/events/{id}")
+                                .hasAnyAuthority("USER", "ADMIN")
+                                .requestMatchers(HttpMethod.PUT, "/events/{id}")
+                                .hasAnyAuthority("USER", "ADMIN") // Проверка владельца в сервисе
+                                .requestMatchers(HttpMethod.DELETE, "/events/{id}")
+                                .hasAnyAuthority("USER", "ADMIN") // Проверка владельца в сервисе
+                                .requestMatchers(HttpMethod.POST, "/events/search")
+                                .hasAnyAuthority("USER", "ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/events/my")
+                                .hasAuthority("USER") // Только USER (его мероприятия)
+                                .requestMatchers(HttpMethod.GET, "/events/registrations/my")
+                                .hasAuthority("USER")
+                                .requestMatchers(HttpMethod.POST, "/events/registrations/{eventId}")
+                                .hasAuthority("USER")
+                                .requestMatchers(HttpMethod.DELETE, "/events/registrations/cancel/{eventId}")
+                                .hasAuthority("USER")
                                 .anyRequest().authenticated())
                 .exceptionHandling(exception ->
                         exception.authenticationEntryPoint(customAuthenticationEntryPoint)

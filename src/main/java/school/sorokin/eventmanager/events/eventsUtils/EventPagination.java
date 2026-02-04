@@ -1,9 +1,8 @@
-package school.sorokin.eventmanager.events;
+package school.sorokin.eventmanager.events.eventsUtils;
 
 import school.sorokin.eventmanager.events.entity.EventStatus;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 public record EventPagination(
         String name,

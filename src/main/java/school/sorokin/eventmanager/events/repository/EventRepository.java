@@ -1,4 +1,5 @@
 package school.sorokin.eventmanager.events.repository;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,6 +10,7 @@ import school.sorokin.eventmanager.events.entity.EventEntity;
 import school.sorokin.eventmanager.events.entity.EventStatus;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,17 +40,27 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
             + "LEFT JOIN FETCH e.registrations "
             + "LEFT JOIN FETCH e.location "
             + "WHERE e.owner.id = :ownerId")
-    List<EventEntity>findByOwnerIdWithDetails(Long owner);
+    List<EventEntity> findByOwnerIdWithDetails(Long ownerId);
 
 
     @Query("SELECT DISTINCT e from EventEntity e " +
             "LEFT JOIN FETCH e.registrations " +
             "WHERE e.id = :eventId")
-    Optional<EventEntity> findEventForRegistration(@Param("eventId") Long id);
+    Optional<EventEntity> findEventForRegistration(@Param("eventId") Long eventId);
 
 
-    @Query("select DISTINCT  e from EventEntity e " +
+    @Query("SELECT e, SIZE(e.registrations) from EventEntity e " +
             "LEFT JOIN FETCH e.owner " +
-            "LEFT JOIN FETCH e.location" +
-            "")
+            "LEFT JOIN FETCH e.location " +
+            "JOIN e.registrations r " +
+            "WHERE r.user.id = :userId")
+    List<Object[]> getAllEventsCurrentUSer(@Param("userId") Long userId);
+
+    @Query("SELECT  e from EventEntity e " +
+            "WHERE e.dateTime <= :currentTime " +
+            "AND e.status = :status")
+    List<EventEntity> findByDateTimeBeforeAndStatus(@Param("currentTime") LocalDateTime dateTimeBefore,
+                                                    @Param("status") EventStatus status);
+
+    List<EventEntity> findByStatus(EventStatus eventStatus);
 }
