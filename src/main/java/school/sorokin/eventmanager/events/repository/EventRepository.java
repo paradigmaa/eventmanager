@@ -49,11 +49,12 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
     Optional<EventEntity> findEventForRegistration(@Param("eventId") Long eventId);
 
 
-    @Query("SELECT e, SIZE(e.registrations) from EventEntity e " +
+    @Query("SELECT e, COUNT(r) from EventEntity e " +
             "LEFT JOIN FETCH e.owner " +
             "LEFT JOIN FETCH e.location " +
             "JOIN e.registrations r " +
-            "WHERE r.user.id = :userId")
+            "WHERE r.user.id = :userId " +
+            "GROUP BY e, e.owner, e.location")
     List<Object[]> getAllEventsCurrentUSer(@Param("userId") Long userId);
 
     @Query("SELECT  e from EventEntity e " +
@@ -63,4 +64,8 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
                                                     @Param("status") EventStatus status);
 
     List<EventEntity> findByStatus(EventStatus eventStatus);
+
+    boolean existsByName(String name);
+
+    boolean existsByNameAndIdNot(String name, Long id);
 }

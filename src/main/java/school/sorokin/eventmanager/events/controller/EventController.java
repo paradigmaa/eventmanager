@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import school.sorokin.eventmanager.events.eventsUtils.EventPagination;
+import school.sorokin.eventmanager.events.dto.EventPagination;
 import school.sorokin.eventmanager.events.dto.EventCreateRequestDto;
 import school.sorokin.eventmanager.events.dto.EventResponseDto;
 import school.sorokin.eventmanager.events.dto.EventUpdateRequestDto;
@@ -94,7 +94,7 @@ public class EventController {
     @GetMapping("/registrations/my")
     public ResponseEntity<List<EventResponseDto>> getEventsOfTheCurrentUser() {
         log.debug("GET /events/registrations/my - Получение мероприятий на которые зарегистрирован пользователь");
-        List<EventResponseDto> response = eventService.getEventsOfTheCurrentUSer();
+        List<EventResponseDto> response = eventService.getEventsOfTheCurrentUser();
         log.debug("Найдено {} мероприятий для участия", response.size());
         return ResponseEntity.ok(response);
     }

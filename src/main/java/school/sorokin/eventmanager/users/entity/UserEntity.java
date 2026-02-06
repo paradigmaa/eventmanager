@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import school.sorokin.eventmanager.events.entity.EventEntity;
 import school.sorokin.eventmanager.events.entity.RegistrationEntity;
+import school.sorokin.eventmanager.users.dto.RoleUsers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,8 @@ public class UserEntity {
 
     private Integer age;
 
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private RoleUsers role;
 
     @OneToMany(mappedBy = "owner")
     private List<EventEntity> ownedEvents  = new ArrayList<>();
@@ -36,13 +38,24 @@ public class UserEntity {
 
     }
 
-    public UserEntity(Long id, String login, String passwordHash, Integer age, String role) {
+    public UserEntity(Long id, String login, String passwordHash, Integer age, RoleUsers role, List<EventEntity> ownedEvents, List<RegistrationEntity> registrations) {
+        this.id = id;
+        this.login = login;
+        this.passwordHash = passwordHash;
+        this.age = age;
+        this.role = role;
+        this.ownedEvents = ownedEvents;
+        this.registrations = registrations;
+    }
+
+    public UserEntity(Long id, String login, String passwordHash, Integer age, RoleUsers role) {
         this.id = id;
         this.login = login;
         this.passwordHash = passwordHash;
         this.age = age;
         this.role = role;
     }
+
 
     public Long getId() {
         return id;
@@ -76,11 +89,11 @@ public class UserEntity {
         this.age = age;
     }
 
-    public String getRole() {
+    public RoleUsers getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(RoleUsers role) {
         this.role = role;
     }
 

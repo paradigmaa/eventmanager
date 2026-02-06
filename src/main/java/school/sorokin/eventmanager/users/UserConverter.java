@@ -33,7 +33,7 @@ public class UserConverter {
                 newUser.login(),
                 passwordEncoder.encode(newUser.password()),
                 newUser.age(),
-                RoleUsers.USER.toString()
+                RoleUsers.USER
         );
     }
 

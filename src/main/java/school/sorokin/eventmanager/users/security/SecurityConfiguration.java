@@ -71,17 +71,17 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.PUT, "/locations/{id}")
                                 .hasAuthority("ADMIN")
                                 .requestMatchers(HttpMethod.POST, "/events")
-                                .hasAuthority("USER") // USER (ADMIN тоже USER, но проверка в сервисе)
+                                .hasAuthority("USER")
                                 .requestMatchers(HttpMethod.GET, "/events/{id}")
                                 .hasAnyAuthority("USER", "ADMIN")
                                 .requestMatchers(HttpMethod.PUT, "/events/{id}")
-                                .hasAnyAuthority("USER", "ADMIN") // Проверка владельца в сервисе
+                                .hasAnyAuthority("USER", "ADMIN")
                                 .requestMatchers(HttpMethod.DELETE, "/events/{id}")
-                                .hasAnyAuthority("USER", "ADMIN") // Проверка владельца в сервисе
+                                .hasAnyAuthority("USER", "ADMIN")
                                 .requestMatchers(HttpMethod.POST, "/events/search")
                                 .hasAnyAuthority("USER", "ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/events/my")
-                                .hasAuthority("USER") // Только USER (его мероприятия)
+                                .hasAuthority("USER")
                                 .requestMatchers(HttpMethod.GET, "/events/registrations/my")
                                 .hasAuthority("USER")
                                 .requestMatchers(HttpMethod.POST, "/events/registrations/{eventId}")
@@ -90,9 +90,9 @@ public class SecurityConfiguration {
                                 .hasAuthority("USER")
                                 .anyRequest().authenticated())
                 .exceptionHandling(exception ->
-                        exception.authenticationEntryPoint(customAuthenticationEntryPoint)
-                                .accessDeniedHandler(customAccessDeniedHandler)
-                )
+                                        exception.authenticationEntryPoint(customAuthenticationEntryPoint)
+                                                .accessDeniedHandler(customAccessDeniedHandler)
+                                )
                 .addFilterBefore(jwtTokenFilter, AnonymousAuthenticationFilter.class)
                 .build();
     }

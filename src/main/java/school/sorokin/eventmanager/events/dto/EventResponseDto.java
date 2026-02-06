@@ -10,7 +10,7 @@ public record EventResponseDto
                 Long ownerId,
                 Integer maxPlaces,
                 Integer occupiedPlaces,
-                LocalDateTime dateTime,
+                LocalDateTime date,
                 BigDecimal cost,
                 Integer duration,
                 Long locationId,

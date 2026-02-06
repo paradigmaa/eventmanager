@@ -1,7 +1,6 @@
 package school.sorokin.eventmanager.events.entity;
 
 import jakarta.persistence.*;
-import school.sorokin.eventmanager.locations.entity.LocationEntity;
 import school.sorokin.eventmanager.users.entity.UserEntity;
 
 @Entity

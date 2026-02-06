@@ -50,8 +50,8 @@ public class DefaultUsersInitializer {
         UserEntity admin = new UserEntity();
         admin.setLogin(DEFAULT_ADMIN_LOGIN);
         admin.setPasswordHash(passwordEncoder.encode(DEFAULT_ADMIN_PASSWORD));
-        admin.setRole(RoleUsers.ADMIN.toString());
-        admin.setAge(30); // Можно задать дефолтный возраст
+        admin.setRole(RoleUsers.ADMIN);
+        admin.setAge(30);
 
         userRepository.save(admin);
         log.info("Created default admin user with login: {}", DEFAULT_ADMIN_LOGIN);
@@ -66,7 +66,7 @@ public class DefaultUsersInitializer {
         UserEntity user = new UserEntity();
         user.setLogin(DEFAULT_USER_LOGIN);
         user.setPasswordHash(passwordEncoder.encode(DEFAULT_USER_PASSWORD));
-        user.setRole(RoleUsers.USER.toString());
+        user.setRole(RoleUsers.USER);
         user.setAge(25);
 
         userRepository.save(user);

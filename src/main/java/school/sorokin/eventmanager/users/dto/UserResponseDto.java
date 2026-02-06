@@ -9,7 +9,7 @@ public record UserResponseDto(
 
         Integer age,
 
-        String role
+        RoleUsers role
 ) {
 
 }

@@ -39,8 +39,8 @@ public class LocationService {
         Location newLocation = locationConverter.convertCreateDtoToLocation(createLocation);
         LocationEntity saveLocation = locationRepository.save(locationConverter.convertLocationToEntity(newLocation));
         log.info("Запрос на создание локации '{}' с id={} у сервиса выполнен",
-                newLocation.getName(),
-                newLocation.getId());
+                saveLocation.getName(),
+                saveLocation.getId());
         return locationConverter.convertEntityToResponseDto(saveLocation);
     }
 

@@ -9,7 +9,7 @@ public record RegistrationUserRequestDto(
         String login,
 
         @NotBlank
-        @Size(min= 5)
+        @Size(min= 4)
         String password,
 
         Integer age

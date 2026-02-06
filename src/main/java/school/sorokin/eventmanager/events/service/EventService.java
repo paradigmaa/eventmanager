@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-import school.sorokin.eventmanager.events.eventsUtils.EventPagination;
+import school.sorokin.eventmanager.events.dto.EventPagination;
 import org.springframework.stereotype.Service;
 import school.sorokin.eventmanager.events.EventConverter;
 import school.sorokin.eventmanager.events.domain.Event;
@@ -20,6 +20,8 @@ import school.sorokin.eventmanager.events.exception.*;
 import school.sorokin.eventmanager.events.repository.EventRepository;
 import school.sorokin.eventmanager.events.repository.RegistrationRepository;
 import school.sorokin.eventmanager.locations.entity.LocationEntity;
+import school.sorokin.eventmanager.locations.exception.LocationCapacityException;
+import school.sorokin.eventmanager.users.dto.RoleUsers;
 import school.sorokin.eventmanager.users.entity.UserEntity;
 
 import java.util.List;
@@ -54,7 +56,7 @@ public class EventService {
         log.info("Запрос на удаление мероприятия по id={}", id);
         UserEntity owner = eventServiceCheckerUser.checkToFindUser();
         EventEntity eventEntity = checkFindEventByIdHelper(id);
-        if (!owner.getId().equals(eventEntity.getOwner().getId()) && !owner.getRole().equals("ADMIN")) {
+        if (!owner.getId().equals(eventEntity.getOwner().getId()) && !owner.getRole().equals(RoleUsers.ADMIN)) {
             log.warn("Попытка удаления мероприятия не владельцем или админом");
             throw new EventDeleteException("Мероприятие может удалить только владелец или администратор");
         }
@@ -138,18 +140,27 @@ public class EventService {
             log.error("Дата мероприятия в прошлом: {}", domainEvent.dateTime());
             throw new EventDateException("Дата мероприятия не может быть в прошлом");
         }
+        log.info("Проверка уникальности имени при создании: name={}", domainEvent.name());
+        if (eventRepository.existsByName(domainEvent.name())) {
+            log.error("Имя '{}' уже существует в базе", domainEvent.name());
+            throw new AlreadyEventNameExistException("Мероприятие с таким именем уже существует");
+        }
         EventEntity entityEvent = eventRepository.save(eventConverter.convertEventToEventEntity(domainEvent));
         log.info("Мероприятие создано с ID: {}", entityEvent.getId());
         return eventConverter.convertEvenEntityToEvenDto(entityEvent);
     }
 
     private EventEntity checkFindEventByIdHelper(Long id) {
+        UserEntity owner = eventServiceCheckerUser.checkToFindUser();
+        log.info("Поиск мероприятия ID={} для пользователя {}", id, owner.getLogin());
         EventEntity findEntity = eventRepository.findById(id)
                 .orElseThrow(
                         () -> {
                             log.warn("Мероприятие с ID={} не найдено", id);
                             return new EventNotFoundException("Мероприятие не найдено");
                         });
+        log.info("Мероприятие ID={} найдено: name='{}', owner={}",
+                id, findEntity.getName(), findEntity.getOwner().getLogin());
         return findEntity;
     }
 
@@ -158,7 +169,12 @@ public class EventService {
         EventEntity foundEntity = checkFindEventByIdHelper(id);
         log.info("Проверка мероприятия и прав пользователя");
         UserEntity owner = eventServiceCheckerUser.checkToFindUser();
-        if (!owner.getId().equals(foundEntity.getOwner().getId()) && !owner.getRole().equals("ADMIN")) {
+        int registeredCount = foundEntity.getRegistrations().size();
+
+        log.info("Текущее мероприятие: name='{}', maxPlaces={}, registered={}, locationId={}",
+                foundEntity.getName(), foundEntity.getMaxPlaces(), registeredCount, foundEntity.getLocation().getId());
+
+        if (!owner.getId().equals(foundEntity.getOwner().getId()) && !owner.getRole().equals(RoleUsers.ADMIN)) {
             log.warn("Пользователь {} пытался обновить чужое мероприятие ID: {}", owner.getLogin(), id);
             throw new EventDeleteException("Мероприятие может обновлять только владелец или администратор");
         }
@@ -167,7 +183,17 @@ public class EventService {
             throw new EventStatusException("Нельзя редактировать мероприятие, которое уже началось или завершено");
         }
 
+        log.info("Проверка уникальности имени: newName='{}', currentId={}",
+                eventUpdateRequestDto.name(), foundEntity.getId());
+        if(eventRepository.existsByNameAndIdNot(eventUpdateRequestDto.name(), foundEntity.getId())){
+            log.error("Имя '{}' уже существует у другого мероприятия", eventUpdateRequestDto.name());
+            throw new AlreadyEventNameExistException("Такое имя уже есть");
+        } else {
+            log.info("Имя '{}' свободно для использования", eventUpdateRequestDto.name());
+        }
+
         if (eventUpdateRequestDto.maxPlaces() > foundEntity.getMaxPlaces()) {
+            log.info("Увеличение мест с {} до {}", foundEntity.getMaxPlaces(), eventUpdateRequestDto.maxPlaces());
             if (foundEntity.getLocation().getCapacity() < eventUpdateRequestDto.maxPlaces()) {
                 int deficit = eventUpdateRequestDto.maxPlaces() - foundEntity.getLocation().getCapacity();
                 log.error("Превышение capacity при обновлении: {} < {}", foundEntity.getLocation().getCapacity(), eventUpdateRequestDto.maxPlaces());
@@ -178,8 +204,10 @@ public class EventService {
                         deficit
                 );
             }
+        } else if (eventUpdateRequestDto.maxPlaces() < foundEntity.getMaxPlaces()) {
+            log.info("Уменьшение мест с {} до {}", foundEntity.getMaxPlaces(), eventUpdateRequestDto.maxPlaces());
         }
-        int registeredCount = foundEntity.getRegistrations().size();
+
         if (eventUpdateRequestDto.maxPlaces() < registeredCount) {
             log.error("Нельзя уменьшить места до {} при {} зарегистрированных", eventUpdateRequestDto.maxPlaces(), registeredCount);
             throw new EventFullException(
@@ -187,28 +215,85 @@ public class EventService {
                             .formatted(eventUpdateRequestDto.maxPlaces(), registeredCount)
             );
         }
-        if (eventUpdateRequestDto.dateTime().isBefore(java.time.LocalDateTime.now())) {
-            log.error("Дата мероприятия установлена в прошлом: {}", eventUpdateRequestDto.dateTime());
+
+        if (eventUpdateRequestDto.date().isBefore(java.time.LocalDateTime.now())) {
+            log.error("Дата мероприятия установлена в прошлом: {}", eventUpdateRequestDto.date());
             throw new EventDateException("Дата мероприятия не может быть в прошлом");
         }
 
+        log.info("Проверка смены локации: requestedLocationId={}, currentLocationId={}",
+                eventUpdateRequestDto.locationId(), foundEntity.getLocation().getId());
 
-        EventEntity updateEntity = new EventEntity(
-                foundEntity.getId(),
-                eventUpdateRequestDto.name(),
-                eventUpdateRequestDto.dateTime(),
-                eventUpdateRequestDto.cost(),
-                eventUpdateRequestDto.duration(),
-                eventUpdateRequestDto.maxPlaces(),
-                foundEntity.getOwner(),
-                foundEntity.getLocation(),
-                foundEntity.getRegistrations(),
-                foundEntity.getStatus());
-        EventEntity updatedEvent = eventRepository.save(updateEntity);
-        log.info("Мероприятие ID: {} обновлено", id);
-        return eventConverter.convertEvenEntityToEvenDto(updatedEvent);
+        if (eventUpdateRequestDto.locationId().equals(foundEntity.getLocation().getId())) {
+            log.info("Локация не меняется, обновляем остальные поля");
+            EventEntity updateEntity = new EventEntity(
+                    foundEntity.getId(),
+                    eventUpdateRequestDto.name(),
+                    eventUpdateRequestDto.date(),
+                    eventUpdateRequestDto.cost(),
+                    eventUpdateRequestDto.duration(),
+                    eventUpdateRequestDto.maxPlaces(),
+                    foundEntity.getOwner(),
+                    foundEntity.getLocation(),
+                    foundEntity.getRegistrations(),
+                    foundEntity.getStatus());
+            EventEntity updatedEvent = eventRepository.save(updateEntity);
+            log.info("Мероприятие ID: {} обновлено (без смены локации)", id);
+            return eventConverter.convertEvenEntityToEvenDto(updatedEvent);
+        } else {
+            log.info("Запрошена смена локации на ID={}", eventUpdateRequestDto.locationId());
+            LocationEntity newLocation = eventServiceCheckerLocation.checkLocationId(eventUpdateRequestDto.locationId());
+            log.info("Новая локация найдена: id={}, name='{}', capacity={}",
+                    newLocation.getId(), newLocation.getName(), newLocation.getCapacity());
+
+            int finalMaxPlaces;
+            finalMaxPlaces = eventUpdateRequestDto.maxPlaces();
+            log.info("Определен finalMaxPlaces={}", finalMaxPlaces);
+
+            if (finalMaxPlaces < foundEntity.getRegistrations().size()) {
+                log.error("finalMaxPlaces={} < registeredCount={}", finalMaxPlaces, foundEntity.getRegistrations().size());
+                throw new EventFullException(
+                        "Нельзя установить %d мест, когда уже зарегистрировано %d участников".formatted(
+                                finalMaxPlaces, foundEntity.getRegistrations().size()));
+            }
+
+            log.info("Проверка вместимости новой локации: capacity={} < finalMaxPlaces={}? {}",
+                    newLocation.getCapacity(), finalMaxPlaces, newLocation.getCapacity() < finalMaxPlaces);
+
+            if (newLocation.getCapacity() < finalMaxPlaces) {
+                log.error("Локация id={} вмещает только {}, а требуется {}",
+                        newLocation.getId(), newLocation.getCapacity(), finalMaxPlaces);
+                throw new LocationCapacityException(
+                        "Невозможно переехать на локацию id=%d. Локация вмещает %d, а требуется %d мест"
+                                .formatted(
+                                        newLocation.getId(),
+                                        newLocation.getCapacity(),
+                                        finalMaxPlaces
+                                ));
+            }
+
+            log.info("Все проверки пройдены, создаем обновленную сущность");
+            EventEntity updateEntityNewLocation = new EventEntity(
+                    foundEntity.getId(),
+                    eventUpdateRequestDto.name(),
+                    eventUpdateRequestDto.date(),
+                    eventUpdateRequestDto.cost(),
+                    eventUpdateRequestDto.duration(),
+                    finalMaxPlaces,
+                    foundEntity.getOwner(),
+                    newLocation,
+                    foundEntity.getRegistrations(),
+                    foundEntity.getStatus());
+
+            log.info("Сохранение мероприятия с новой локацией");
+            eventRepository.save(updateEntityNewLocation);
+            log.info("Мероприятие ID: {} успешно обновлено с изменением локации на ID: {}",
+                    id, newLocation.getId());
+            return eventConverter.convertEvenEntityToEvenDto(updateEntityNewLocation);
+        }
 
     }
+
 
     private String registrationUserForTheEventHelper(Long id) {
         EventEntity eventEntity = eventRepository.findEventForRegistration(id)
@@ -216,12 +301,10 @@ public class EventService {
                     log.warn("Мероприятие с ID: {} не найдено для регистрации", id);
                     return new EventNotFoundException("Мероприятие не найдено");
                 });
-        if (eventEntity.getStatus().equals(EventStatus.STARTED)) {
-            log.warn("Попытка регистрации на начавшееся мероприятие ID: {}", id);
-            throw new EventStatusException(("Мероприятие началось. Новые регистрации недоступны на мероприятие. " +
-                    "Статус %s /'STARTED/'")
-                    .formatted(eventEntity.getName()));
-        }
+        log.info("Найдено мероприятие для регистрации: name='{}', status={}, registered={}/{}",
+                eventEntity.getName(), eventEntity.getStatus(),
+                eventEntity.getRegistrations().size(), eventEntity.getMaxPlaces());
+
         if (eventEntity.getStatus().equals(EventStatus.CANCELED)) {
             log.warn("Попытка регистрации на отмененное мероприятие ID: {}", id);
             throw new EventStatusException(("Мероприятие отменено. Новые регистрации недоступны на мероприятие. " +
@@ -240,6 +323,7 @@ public class EventService {
                     .formatted(eventEntity.getMaxPlaces(), eventEntity.getRegistrations().size()));
         }
         UserEntity userIdRegistration = eventServiceCheckerUser.checkToFindUser();
+        log.info("Пользователь {} пытается зарегистрироваться", userIdRegistration.getLogin());
 
         boolean alreadyRegister = eventEntity.getRegistrations().stream()
                 .anyMatch(regUser -> regUser.getUser().getId().equals(userIdRegistration.getId()));
@@ -255,7 +339,7 @@ public class EventService {
         );
         eventEntity.getRegistrations().add(registrationEntity);
         registrationRepository.save(registrationEntity);
-        log.info("Пользователь {} зарегистрирован на мероприятие ID: {}", userIdRegistration.getLogin(), id);
+        log.info("Пользователь {} успешно зарегистрирован на мероприятие ID: {}", userIdRegistration.getLogin(), id);
         return "Успешная регистрация на мероприятие";
     }
 
@@ -266,6 +350,9 @@ public class EventService {
                     return new EventNotFoundException("Мероприятие не найдено");
                 });
         UserEntity userIdRegistration = eventServiceCheckerUser.checkToFindUser();
+        log.info("Пользователь {} отменяет регистрацию на мероприятие ID: {}",
+                userIdRegistration.getLogin(), id);
+
         if (eventEntity.getStatus().equals(EventStatus.STARTED)) {
             log.warn("Попытка отмены регистрации с начавшегося мероприятия ID: {}", id);
             throw new EventStatusException(("Мероприятие началось. Невозможно отменить. " +
@@ -282,6 +369,8 @@ public class EventService {
                 .filter(reg -> reg.getUser().getId().equals(userIdRegistration.getId()))
                 .findFirst();
         if (userRegistration.isPresent()) {
+            log.info("Найдена регистрация пользователя {} на мероприятие ID: {}",
+                    userIdRegistration.getLogin(), id);
             eventEntity.getRegistrations().remove(userRegistration.get());
             registrationRepository.delete(userRegistration.get());
             log.info("Регистрация пользователя {} отменена для мероприятия ID: {}", userIdRegistration.getLogin(), id);
@@ -294,7 +383,7 @@ public class EventService {
     }
 
 
-    public List<EventResponseDto> getEventsOfTheCurrentUSer() {
+    public List<EventResponseDto> getEventsOfTheCurrentUser() {
         UserEntity userIdRegistration = eventServiceCheckerUser.checkToFindUser();
         log.debug("Поиск мероприятий для пользователя: {}", userIdRegistration.getLogin());
         List<Object[]> getAllEvents = eventRepository.getAllEventsCurrentUSer(userIdRegistration.getId());
@@ -307,6 +396,8 @@ public class EventService {
                 .map(row -> {
                             EventEntity event = (EventEntity) row[0];
                             Long count = (Long) row[1];
+                            log.debug("Обработка мероприятия: id={}, name='{}', registered={}",
+                                    event.getId(), event.getName(), count);
                             return new EventResponseDto(
                                     event.getId(),
                                     event.getName(),

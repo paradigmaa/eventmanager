@@ -8,8 +8,6 @@ import school.sorokin.eventmanager.events.entity.EventEntity;
 import school.sorokin.eventmanager.events.entity.EventStatus;
 import school.sorokin.eventmanager.locations.entity.LocationEntity;
 import school.sorokin.eventmanager.users.entity.UserEntity;
-
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 @Component
@@ -20,7 +18,7 @@ public class EventConverter {
         return new Event(
                 null,
                 eventCreateRequestDto.name(),
-                eventCreateRequestDto.dateTime(),
+                eventCreateRequestDto.date(),
                 eventCreateRequestDto.cost(),
                 eventCreateRequestDto.duration(),
                 eventCreateRequestDto.maxPlaces(),
