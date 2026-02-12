@@ -22,9 +22,9 @@ public record Event(
 
         Integer maxPlaces,
 
-        UserEntity owner,
+        Long owner,
 
-        LocationEntity location,
+        Long location,
 
         List<RegistrationEntity> registrations,
 

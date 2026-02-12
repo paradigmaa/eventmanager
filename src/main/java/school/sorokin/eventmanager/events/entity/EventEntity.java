@@ -24,21 +24,23 @@ public class EventEntity {
     private LocalDateTime dateTime;
 
     @NotNull
+    @Column(name = "cost")
     private BigDecimal cost;
 
     @NotNull
+    @Column(name = "duration")
     private Integer duration;
 
     @NotNull
+    @Column(name = "max_places")
     private Integer maxPlaces;
 
-    @ManyToOne
-    @JoinColumn(name = "owner_id")
-    private UserEntity owner;
 
-    @ManyToOne()
-    @JoinColumn(name = "location_id")
-    private LocationEntity location;
+    @Column(name = "owner_id")
+    private Long owner;
+
+    @Column(name = "location_id")
+    private Long location;
 
 
     @OneToMany(mappedBy = "event")
@@ -47,7 +49,7 @@ public class EventEntity {
     @Enumerated(EnumType.STRING)
     private EventStatus status;
 
-    public EventEntity(Long id, String name, LocalDateTime dateTime, BigDecimal cost, Integer duration, Integer maxPlaces, UserEntity owner, LocationEntity location, List<RegistrationEntity> registrations, EventStatus status) {
+    public EventEntity(Long id, String name, LocalDateTime dateTime, BigDecimal cost, Integer duration, Integer maxPlaces, Long owner, Long location, List<RegistrationEntity> registrations, EventStatus status) {
         this.id = id;
         this.name = name;
         this.dateTime = dateTime;
@@ -61,6 +63,7 @@ public class EventEntity {
     }
 
     public EventEntity() {
+
     }
 
     public Long getId() {
@@ -111,19 +114,19 @@ public class EventEntity {
         this.maxPlaces = maxPlaces;
     }
 
-    public UserEntity getOwner() {
+    public Long getOwner() {
         return owner;
     }
 
-    public void setOwner(UserEntity owner) {
+    public void setOwner(Long owner) {
         this.owner = owner;
     }
 
-    public LocationEntity getLocation() {
+    public Long getLocation() {
         return location;
     }
 
-    public void setLocation(LocationEntity location) {
+    public void setLocation(Long location) {
         this.location = location;
     }
 

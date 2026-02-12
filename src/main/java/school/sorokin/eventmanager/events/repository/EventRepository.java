@@ -23,9 +23,9 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
             "AND (:placesMax IS NULL OR e.maxPlaces <= :placesMax) " +
             "AND (:costMin IS NULL OR e.cost >= :costMin) " +
             "AND (:costMax IS NULL OR e.cost <= :costMax) " +
-            "AND (:locationId IS NULL OR e.location.id = :locationId) " +
+            "AND (:locationId IS NULL OR e.location = :locationId) " +
             "AND (:eventStatus IS NULL OR e.status = :eventStatus)")
-    Page<EventEntity> searchEvents(
+    Page<EventEntity> findEvents(
             @Param("name") String name,
             @Param("placesMin") Integer placesMin,
             @Param("placesMax") Integer placesMax,
@@ -39,7 +39,7 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
     @Query("SELECT DISTINCT e from EventEntity e "
             + "LEFT JOIN FETCH e.registrations "
             + "LEFT JOIN FETCH e.location "
-            + "WHERE e.owner.id = :ownerId")
+            + "WHERE e.owner = :ownerId")
     List<EventEntity> findByOwnerIdWithDetails(Long ownerId);
 
 
@@ -53,9 +53,9 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
             "LEFT JOIN FETCH e.owner " +
             "LEFT JOIN FETCH e.location " +
             "JOIN e.registrations r " +
-            "WHERE r.user.id = :userId " +
+            "WHERE r.userId = :userId " +
             "GROUP BY e, e.owner, e.location")
-    List<Object[]> getAllEventsCurrentUSer(@Param("userId") Long userId);
+    List<Object[]> getAllEventsCurrentUser(@Param("userId") Long userId);
 
     @Query("SELECT  e from EventEntity e " +
             "WHERE e.dateTime <= :currentTime " +
@@ -63,9 +63,16 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
     List<EventEntity> findByDateTimeBeforeAndStatus(@Param("currentTime") LocalDateTime dateTimeBefore,
                                                     @Param("status") EventStatus status);
 
-    List<EventEntity> findByStatus(EventStatus eventStatus);
+    @Query("UPDATE EventEntity e SET e.status = 'STARTED' " +
+            "WHERE e.status = 'WAIT_START' AND e.dateTime <= :now")
+    int updateStatusToStarted(@Param("now") LocalDateTime now);
+
+
+    @Query("UPDATE EventEntity e SET e.status = 'FINISHED' " +
+            "WHERE e.status = 'STARTED' AND e.dateTime + e.duration MINUTE <= :now")
+    int updateStatusToFinished(@Param("now") LocalDateTime now);
+
 
     boolean existsByName(String name);
 
-    boolean existsByNameAndIdNot(String name, Long id);
 }

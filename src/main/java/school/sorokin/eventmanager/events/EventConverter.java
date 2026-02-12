@@ -22,8 +22,8 @@ public class EventConverter {
                 eventCreateRequestDto.cost(),
                 eventCreateRequestDto.duration(),
                 eventCreateRequestDto.maxPlaces(),
-                owner,
-                location,
+                owner.getId(),
+                location.getId(),
                 new ArrayList<>(),
                 null
         );
@@ -67,13 +67,13 @@ public class EventConverter {
         return new EventResponseDto(
                 entityEvent.getId(),
                 entityEvent.getName(),
-                entityEvent.getOwner().getId(),
+                entityEvent.getOwner(),
                 entityEvent.getMaxPlaces(),
                 entityEvent.getRegistrations().size(),
                 entityEvent.getDateTime(),
                 entityEvent.getCost(),
                 entityEvent.getDuration(),
-                entityEvent.getLocation().getId(),
+                entityEvent.getLocation(),
                 entityEvent.getStatus()
         );
 

@@ -36,7 +36,7 @@ public class EventController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteEvent(@PathVariable Long id) {
+    public ResponseEntity<String> deleteEventById(@PathVariable Long id) {
         log.info("DELETE /events/{} - Удаление мероприятия", id);
         String response = eventService.deleteEvent(id);
         log.info("Мероприятие ID: {} удалено", id);
@@ -68,36 +68,13 @@ public class EventController {
     }
 
     @GetMapping("/my")
-    public ResponseEntity<List<EventResponseDto>> getCreatedEventsOfTheCurrentUser() {
+    public ResponseEntity<List<EventResponseDto>> getUserEvents() {
         log.debug("GET /events/my - Получение мероприятий созданных текущим пользователем");
         List<EventResponseDto> response = eventService.getCreatedEventsOfTheCurrentUser();
         log.debug("Найдено {} созданных мероприятий", response.size());
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/registrations/{id}")
-    public ResponseEntity<String> registerUserForTheEvent(@PathVariable Long id) {
-        log.info("POST /events/registrations/{} - Регистрация пользователя на мероприятие", id);
-        String response = eventService.registrationUserForTheEvent(id);
-        log.info("Пользователь зарегистрирован на мероприятие ID: {}", id);
-        return ResponseEntity.ok(response);
-    }
-
-    @DeleteMapping("/registrations/cancel/{id}")
-    public ResponseEntity<String> unregisterUserForTheEvent(@PathVariable Long id) {
-        log.info("DELETE /events/registrations/cancel/{} - Отмена регистрации на мероприятие", id);
-        String response = eventService.cancelEvent(id);
-        log.info("Регистрация отменена для мероприятия ID: {}", id);
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/registrations/my")
-    public ResponseEntity<List<EventResponseDto>> getEventsOfTheCurrentUser() {
-        log.debug("GET /events/registrations/my - Получение мероприятий на которые зарегистрирован пользователь");
-        List<EventResponseDto> response = eventService.getEventsOfTheCurrentUser();
-        log.debug("Найдено {} мероприятий для участия", response.size());
-        return ResponseEntity.ok(response);
-    }
 }
 
 

@@ -17,7 +17,7 @@ public record EventUpdateRequestDto(
         @JsonFormat(shape = JsonFormat.Shape.STRING,
                 pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
         LocalDateTime date,
-        @NotNull(message = "Стоимость может быть 0")
+        @NotNull(message = "Стоимость не может быть 0")
         @Positive(message = "Нельзя ставить отрицательные значения")
         BigDecimal cost,
         @NotNull(message = "Продолжительность не может быть 0")

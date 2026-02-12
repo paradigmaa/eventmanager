@@ -1,12 +1,9 @@
 package school.sorokin.eventmanager.events.service;
 
 import org.springframework.stereotype.Component;
-import school.sorokin.eventmanager.events.dto.EventUpdateRequestDto;
-import school.sorokin.eventmanager.events.entity.EventEntity;
 import school.sorokin.eventmanager.locations.entity.LocationEntity;
 import school.sorokin.eventmanager.locations.exception.NotFoundLocationException;
 import school.sorokin.eventmanager.locations.repository.LocationRepository;
-import school.sorokin.eventmanager.users.entity.UserEntity;
 
 @Component
 public class EventServiceCheckerLocation {

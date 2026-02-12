@@ -14,14 +14,14 @@ public class RegistrationEntity {
     @JoinColumn(name = "event_id")
     private EventEntity event;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
 
-    public RegistrationEntity(Long id, EventEntity event, UserEntity user) {
+    @Column(name = "user_id")
+    private Long userId;
+
+    public RegistrationEntity(Long id, EventEntity event, Long userId) {
         this.id = id;
         this.event = event;
-        this.user = user;
+        this.userId = userId;
     }
 
     public RegistrationEntity() {
@@ -44,11 +44,15 @@ public class RegistrationEntity {
         this.event = event;
     }
 
-    public UserEntity getUser() {
-        return user;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser(UserEntity user) {
-        this.user = user;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
+
+
+
 }
+
