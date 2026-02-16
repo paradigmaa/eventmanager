@@ -29,7 +29,7 @@ public class EventController {
 
     @PostMapping
     public ResponseEntity<EventResponseDto> createEvent(@RequestBody EventCreateRequestDto eventCreateRequestDto) {
-        log.info("POST /events - Создание мероприятия: {}", eventCreateRequestDto.name());
+        log.info("Создание мероприятия: {}", eventCreateRequestDto.name());
         EventResponseDto response = eventService.createEvent(eventCreateRequestDto);
         log.info("Мероприятие создано с ID: {}", response.id());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -37,23 +37,22 @@ public class EventController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteEventById(@PathVariable Long id) {
-        log.info("DELETE /events/{} - Удаление мероприятия", id);
+        log.info("Удаление мероприятия по id={}", id);
         String response = eventService.deleteEvent(id);
         log.info("Мероприятие ID: {} удалено", id);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<EventResponseDto> getEventById(@PathVariable Long id) {
-        log.debug("GET /events/{} - Получение мероприятия", id);
+        log.info("Получение мероприятия по id={}", id);
         EventResponseDto response = eventService.findEventById(id);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EventResponseDto> updateEvent(@PathVariable Long id,
-                                                        @RequestBody EventUpdateRequestDto eventUpdateRequestDto) {
-        log.info("PUT /events/{} - Обновление мероприятия", id);
+    public ResponseEntity<EventResponseDto> updateEvent(@PathVariable Long id, @RequestBody EventUpdateRequestDto eventUpdateRequestDto) {
+        log.info("Обновление мероприятия по id={}", id);
         EventResponseDto response = eventService.updateEvent(id, eventUpdateRequestDto);
         log.info("Мероприятие ID: {} обновлено", id);
         return ResponseEntity.ok(response);
@@ -61,17 +60,17 @@ public class EventController {
 
     @PostMapping("/search")
     public ResponseEntity<Page<EventResponseDto>> getEventsByFilter(@RequestBody EventPagination pagination) {
-        log.debug("POST /events/search - Поиск мероприятий с фильтрами");
+        log.info("Поиск мероприятий с фильтрами");
         Page<EventResponseDto> response = eventService.getEventsByFilter(pagination);
-        log.debug("Найдено {} мероприятий", response.getTotalElements());
+        log.info("Найдено {} мероприятий", response.getTotalElements());
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/my")
     public ResponseEntity<List<EventResponseDto>> getUserEvents() {
-        log.debug("GET /events/my - Получение мероприятий созданных текущим пользователем");
+        log.info("Получение мероприятий созданных текущим пользователем");
         List<EventResponseDto> response = eventService.getCreatedEventsOfTheCurrentUser();
-        log.debug("Найдено {} созданных мероприятий", response.size());
+        log.info("Найдено {} созданных мероприятий", response.size());
         return ResponseEntity.ok(response);
     }
 

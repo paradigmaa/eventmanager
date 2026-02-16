@@ -24,7 +24,7 @@ public class RegistrationController {
         this.eventService = eventService;
     }
 
-    @PostMapping("/registrations/{id}")
+    @PostMapping("/{id}")
     public ResponseEntity<RegistrationEntity> registerUserForTheEvent(@PathVariable Long id) {
         log.info("POST /events/registrations/{} - Регистрация пользователя на мероприятие", id);
         RegistrationEntity registrationEntity = eventService.registrationUserForTheEvent(id);
@@ -34,7 +34,7 @@ public class RegistrationController {
                 .body(registrationEntity);
     }
 
-    @DeleteMapping("/registrations/cancel/{id}")
+    @DeleteMapping("/cancel/{id}")
     public ResponseEntity<String> unregisterUserForTheEvent(@PathVariable Long id) {
         log.info("DELETE /events/registrations/cancel/{} - Отмена регистрации на мероприятие", id);
         eventService.cancelEvent(id);
@@ -42,7 +42,7 @@ public class RegistrationController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/registrations/my")
+    @GetMapping("/my")
     public ResponseEntity<List<EventResponseDto>> getEventsOfTheCurrentUser() {
         log.debug("GET /events/registrations/my - Получение мероприятий на которые зарегистрирован пользователь");
         List<EventResponseDto> response = eventService.getEventsOfTheCurrentUser();

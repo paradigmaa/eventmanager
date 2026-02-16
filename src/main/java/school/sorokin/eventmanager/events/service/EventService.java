@@ -22,6 +22,7 @@ import school.sorokin.eventmanager.events.repository.RegistrationRepository;
 import school.sorokin.eventmanager.locations.entity.LocationEntity;
 import school.sorokin.eventmanager.users.dto.RoleUsers;
 import school.sorokin.eventmanager.users.entity.UserEntity;
+
 import java.util.List;
 import java.util.Optional;
 
