@@ -1,5 +1,6 @@
 package school.sorokin.eventmanager.events.service;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@RequiredArgsConstructor
 @Service
 public class EventService {
 
@@ -42,16 +44,6 @@ public class EventService {
     private final EventComparator eventComparator;
     private final EventChangeProducer eventChangeProducer;
     private final static Logger log = LoggerFactory.getLogger(EventService.class);
-
-    public EventService(EventRepository eventRepository, RegistrationRepository registrationRepository, EventConverter eventConverter, EventUserCheckService eventUserCheckService, EventLocationCheckService eventLocationCheckService, EventComparator eventComparator, EventChangeProducer eventChangeProducer) {
-        this.eventRepository = eventRepository;
-        this.registrationRepository = registrationRepository;
-        this.eventConverter = eventConverter;
-        this.eventUserCheckService = eventUserCheckService;
-        this.eventLocationCheckService = eventLocationCheckService;
-        this.eventComparator = eventComparator;
-        this.eventChangeProducer = eventChangeProducer;
-    }
 
     @Transactional
     public EventResponseDto createEvent(EventCreateRequestDto eventCreateRequestDto) {
@@ -207,6 +199,7 @@ public class EventService {
                 subscribes,
                 eventComparator.compareToEvent(oldEntity,newEntity)
         );
+        log.info("Отправка сообщения об обновлении в kafka: {}", eventChangeMessage);
         eventChangeProducer.send(eventChangeMessage);
         return eventConverter.convertEvenEntityToEvenDto(newEntity);
     }

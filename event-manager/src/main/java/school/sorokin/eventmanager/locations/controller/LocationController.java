@@ -1,9 +1,8 @@
 package school.sorokin.eventmanager.locations.controller;
 
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,22 +16,17 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/locations")
+@Slf4j
+@RequiredArgsConstructor
 public class LocationController {
 
     private final LocationService locationService;
 
-    private static final Logger log = LoggerFactory.getLogger(LocationController.class);
-
-    @Autowired
-    public LocationController(LocationService locationService) {
-        this.locationService = locationService;
-    }
-
     @PostMapping()
     public ResponseEntity<ResponseLocationDto> createLocation(@RequestBody @Valid CreatLocationDto creatLocationDto) {
-        log.info("POST /locations - Создание локации: '{}'", creatLocationDto.getName());
+        log.info("POST /locations - Создание локации: '{}'", creatLocationDto.name());
         ResponseLocationDto newLocation = locationService.createLocation(creatLocationDto);
-        log.info("POST /locations - локация '{}' создана", newLocation.getName());
+        log.info("POST /locations - локация '{}' создана", newLocation.name());
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(newLocation);
@@ -40,7 +34,7 @@ public class LocationController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ResponseLocationDto> updateLocation(@PathVariable("id") Long id, @RequestBody @Valid UpdateLocationDto updateLocationDto) {
-        log.info("PUT /locations/{} - Обновление локации:'{}'", id, updateLocationDto.getName());
+        log.info("PUT /locations/{} - Обновление локации:'{}'", id, updateLocationDto.name());
         ResponseLocationDto updatedLocation = locationService.updateLocation(id, updateLocationDto);
         log.info("PUT /locations/{} - Локация обновлена", id);
         return ResponseEntity.ok(updatedLocation);
@@ -50,7 +44,7 @@ public class LocationController {
     public ResponseEntity<ResponseLocationDto> findLocationById(@PathVariable("id") Long id) {
         log.info("GET /locations/{} - Получение локации", id);
         ResponseLocationDto findLocal = locationService.findByIdLocation(id);
-        log.info("GET /locations/{} - Локация '{}' получена", id, findLocal.getName());
+        log.info("GET /locations/{} - Локация '{}' получена", id, findLocal.name());
         return ResponseEntity.ok(findLocal);
     }
 

@@ -1,5 +1,6 @@
 package school.sorokin.eventmanager.users.service;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import school.sorokin.eventmanager.users.exception.LoginTakenNameException;
 import school.sorokin.eventmanager.users.repository.UserRepository;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
@@ -21,11 +23,6 @@ public class UserService {
     private final UserRepository userRepository;
 
     private final UserConverter userConverter;
-
-    public UserService(UserRepository userRepository, UserConverter userConverter) {
-        this.userRepository = userRepository;
-        this.userConverter = userConverter;
-    }
 
     @Transactional
     public UserResponseDto registrationUser(RegistrationUserRequestDto registrationUserRequestDto) {
