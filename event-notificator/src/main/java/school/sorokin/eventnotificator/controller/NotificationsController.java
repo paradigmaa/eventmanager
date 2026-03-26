@@ -23,12 +23,15 @@ public class NotificationsController {
 
     @GetMapping("/notifications")
     public ResponseEntity<List<NotificationResponseDto>> getNotReadNotificationForUser() throws JsonProcessingException {
+        log.info("Запрос на получение нотификаций пользователя");
         return ResponseEntity.ok(notificationService.getNotReadNotificationForUser());
     }
 
     @PostMapping("/notifications")
     public ResponseEntity<Void> readAllNotifications() throws JsonProcessingException {
+        log.info("Отметить все нотификации прочитанными");
         notificationService.readAllNotification();
+        log.info("Все нотификации прочтены");
         return ResponseEntity.ok().build();
     }
 }

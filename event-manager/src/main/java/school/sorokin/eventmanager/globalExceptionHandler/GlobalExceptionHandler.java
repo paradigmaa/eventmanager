@@ -1,7 +1,5 @@
 package school.sorokin.eventmanager.globalExceptionHandler;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -21,10 +19,9 @@ import school.sorokin.eventmanager.users.exception.LoginTakenNameException;
 import school.sorokin.eventmanager.users.exception.UserNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
-
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ValidationErrorResponse> handlerValidationException(MethodArgumentNotValidException e) {

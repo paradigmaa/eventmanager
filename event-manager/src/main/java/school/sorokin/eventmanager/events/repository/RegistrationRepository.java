@@ -8,7 +8,6 @@ import school.sorokin.eventmanager.events.entity.EventEntity;
 import school.sorokin.eventmanager.events.entity.RegistrationEntity;
 import school.sorokin.eventmanager.users.entity.UserEntity;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 

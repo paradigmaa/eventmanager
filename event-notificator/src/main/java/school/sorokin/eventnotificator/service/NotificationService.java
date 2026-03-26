@@ -28,6 +28,9 @@ public class NotificationService {
     public List<NotificationResponseDto> getNotReadNotificationForUser() throws JsonProcessingException {
         Long userId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<NotificationEntity> allNotification = notificationRepository.findByUserIdAndIsReadFalse(userId);
+        if (allNotification.isEmpty()) {
+            throw new RuntimeException("Список уведомлений пуст");
+        }
         List<NotificationResponseDto> result = new ArrayList<>();
         for (NotificationEntity n : allNotification) {
             NotificationEventPayloadEntity notificationEventPayloadEntity =
@@ -47,7 +50,7 @@ public class NotificationService {
         return result;
     }
 
-    public void readAllNotification(){
+    public void readAllNotification() {
         Long userId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         int updated = notificationRepository.markAllAsRead(userId);
         log.info("Помечено как прочитанное {} уведомлений", updated);

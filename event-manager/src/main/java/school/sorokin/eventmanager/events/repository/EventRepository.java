@@ -70,6 +70,11 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
             "WHERE e.status = 'STARTED' AND e.dateTime + e.duration MINUTE <= :now")
     int updateStatusToFinished(@Param("now") LocalDateTime now);
 
+    @Query("SELECT e FROM EventEntity e WHERE e.status = 'STARTED'")
+    List<EventEntity> allStatEvent();
+
+    @Query("SELECT e FROM EventEntity e WHERE e.status = 'FINISHED'")
+    List<EventEntity> allFinishEvent();
 
     boolean existsByName(String name);
 
