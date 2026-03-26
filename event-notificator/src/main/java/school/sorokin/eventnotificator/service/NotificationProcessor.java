@@ -10,8 +10,7 @@ import school.sorokin.eventnotificator.entity.NotificationEntity;
 import school.sorokin.eventnotificator.entity.NotificationEventPayloadEntity;
 import school.sorokin.eventnotificator.repository.NotificationEventPayloadRepository;
 import school.sorokin.eventnotificator.repository.NotificationRepository;
-
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Service
 @Slf4j
@@ -39,7 +38,8 @@ public class NotificationProcessor {
             NotificationEntity notificationEntity = new NotificationEntity(
                     null,
                     sub,
-                    newPayload.getPayloadId()
+                    newPayload.getPayloadId(),
+                    LocalDateTime.now()
             );
             notificationRepository.save(notificationEntity);
         }

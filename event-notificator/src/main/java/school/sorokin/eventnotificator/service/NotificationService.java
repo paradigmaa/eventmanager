@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import school.sorokin.eventcommon.kafka.EventChangeMessage;
 import school.sorokin.eventnotificator.dto.NotificationResponseDto;
 import school.sorokin.eventnotificator.entity.NotificationEntity;
@@ -24,13 +25,11 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final ObjectMapper objectMapper;
 
-
+    @Transactional(readOnly = true)
     public List<NotificationResponseDto> getNotReadNotificationForUser() throws JsonProcessingException {
         Long userId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        log.info("JWT содержит id={}",userId);
         List<NotificationEntity> allNotification = notificationRepository.findByUserIdAndIsReadFalse(userId);
-        if (allNotification.isEmpty()) {
-            throw new RuntimeException("Список уведомлений пуст");
-        }
         List<NotificationResponseDto> result = new ArrayList<>();
         for (NotificationEntity n : allNotification) {
             NotificationEventPayloadEntity notificationEventPayloadEntity =
@@ -41,7 +40,7 @@ public class NotificationService {
                     notificationEventPayloadEntity.getEventType(),
                     notificationEventPayloadEntity.getEventId(),
                     n.getCreatedAt(),
-                    n.getIsRead(),
+                    n.isRead(),
                     "Мероприятие было изменено:",
                     eventChangeMessage.changes()
             );
@@ -50,6 +49,7 @@ public class NotificationService {
         return result;
     }
 
+    @Transactional
     public void readAllNotification() {
         Long userId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         int updated = notificationRepository.markAllAsRead(userId);

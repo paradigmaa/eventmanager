@@ -1,20 +1,17 @@
 package school.sorokin.eventmanager.events.service;
 
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import school.sorokin.eventcommon.kafka.EventChangeMessage;
-import school.sorokin.eventmanager.events.dto.EventPagination;
+import school.sorokin.eventmanager.events.RegistrationConverter;
+import school.sorokin.eventmanager.events.dto.*;
 import org.springframework.stereotype.Service;
 import school.sorokin.eventmanager.events.EventConverter;
 import school.sorokin.eventmanager.events.domain.Event;
-import school.sorokin.eventmanager.events.dto.EventCreateRequestDto;
-import school.sorokin.eventmanager.events.dto.EventResponseDto;
-import school.sorokin.eventmanager.events.dto.EventUpdateRequestDto;
 import school.sorokin.eventmanager.events.entity.EventEntity;
 import school.sorokin.eventmanager.events.entity.EventStatus;
 import school.sorokin.eventmanager.events.entity.RegistrationEntity;
@@ -34,6 +31,7 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class EventService {
 
     private final EventRepository eventRepository;
@@ -43,7 +41,7 @@ public class EventService {
     private final EventLocationCheckService eventLocationCheckService;
     private final EventComparator eventComparator;
     private final EventChangeProducer eventChangeProducer;
-    private final static Logger log = LoggerFactory.getLogger(EventService.class);
+    private final RegistrationConverter registrationConverter;
 
     @Transactional
     public EventResponseDto createEvent(EventCreateRequestDto eventCreateRequestDto) {
@@ -111,7 +109,7 @@ public class EventService {
     }
 
     @Transactional
-    public RegistrationEntity registrationUserForTheEvent(Long id) {
+    public RegistrationResponseDto registrationUserForTheEvent(Long id) {
         log.info("Регистрация пользователя на мероприятие ID: {}", id);
         return registrationUserForTheEventHelper(id);
     }
@@ -214,7 +212,7 @@ public class EventService {
     }
 
 
-    private RegistrationEntity registrationUserForTheEventHelper(Long id) {
+    private RegistrationResponseDto registrationUserForTheEventHelper(Long id) {
         EventEntity eventEntity = findEventForRegistration(id);
         checkOnRegistration(eventEntity);
         UserEntity userIdRegistration = eventUserCheckService.checkToFindUser();
@@ -225,7 +223,8 @@ public class EventService {
                 userIdRegistration
         );
         eventEntity.getRegistrations().add(registrationEntity);
-        return registrationRepository.save(registrationEntity);
+        RegistrationEntity save  = registrationRepository.save(registrationEntity);
+        return registrationConverter.registrationToDto(save);
     }
 
     private EventEntity findEventForRegistration(Long id) {

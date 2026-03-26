@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-public class NotificationEntity {
+public class  NotificationEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long notificationId;
@@ -25,15 +25,16 @@ public class NotificationEntity {
 
     private Long payLoadId;
 
-    private Boolean isRead = false;
+    private boolean isRead = false;
 
     private LocalDateTime createdAt;
 
     private LocalDateTime readAt;
 
-    public NotificationEntity(Long notificationId, Long userId, Long payLoadId) {
+    public NotificationEntity(Long notificationId, Long userId, Long payLoadId, LocalDateTime createdAt) {
         this.notificationId = notificationId;
         this.userId = userId;
         this.payLoadId = payLoadId;
+        this.createdAt = createdAt;
     }
 }

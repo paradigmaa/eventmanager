@@ -47,6 +47,8 @@ public class SecurityConfiguration {
                                 .permitAll()
                                 .requestMatchers(HttpMethod.POST, "/users/auth")
                                 .permitAll()
+                                .requestMatchers(HttpMethod.POST, "/users/create")
+                                .permitAll()
                                 .requestMatchers(
                                         "/openapi.yaml",
                                         "/openapi.yml",

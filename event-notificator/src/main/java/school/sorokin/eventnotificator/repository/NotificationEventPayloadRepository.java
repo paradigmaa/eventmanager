@@ -1,6 +1,8 @@
 package school.sorokin.eventnotificator.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import school.sorokin.eventnotificator.entity.NotificationEventPayloadEntity;
 
@@ -8,5 +10,6 @@ import school.sorokin.eventnotificator.entity.NotificationEventPayloadEntity;
 public interface NotificationEventPayloadRepository extends JpaRepository<NotificationEventPayloadEntity, Long> {
 
 
-    NotificationEventPayloadEntity findByPayloadId(Long payloadId);
+    @Query("SELECT p FROM NotificationEventPayloadEntity p WHERE p.payloadId = :payloadId")
+    NotificationEventPayloadEntity findByPayloadId(@Param("payloadId") Long payloadId);
 }

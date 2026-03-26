@@ -12,7 +12,8 @@ import java.util.List;
 @Repository
 public interface NotificationRepository extends JpaRepository<NotificationEntity, Long> {
 
-    List<NotificationEntity> findByUserIdAndIsReadFalse(Long id);
+    @Query("SELECT n from NotificationEntity n WHERE n.userId = :id AND  n.isRead = false")
+    List<NotificationEntity> findByUserIdAndIsReadFalse(@Param("id") Long id);
 
     @Modifying
     @Query("UPDATE NotificationEntity n SET n.isRead = true, n.readAt = CURRENT TIMESTAMP WHERE n.userId = :userId and n.isRead = false")

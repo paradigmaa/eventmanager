@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import school.sorokin.eventmanager.events.dto.EventResponseDto;
+import school.sorokin.eventmanager.events.dto.RegistrationResponseDto;
 import school.sorokin.eventmanager.events.entity.RegistrationEntity;
 import school.sorokin.eventmanager.events.service.EventService;
 
@@ -25,13 +26,13 @@ public class RegistrationController {
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<RegistrationEntity> registerUserForTheEvent(@PathVariable Long id) {
+    public ResponseEntity<RegistrationResponseDto> registerUserForTheEvent(@PathVariable Long id) {
         log.info("POST /events/registrations/{} - Регистрация пользователя на мероприятие", id);
-        RegistrationEntity registrationEntity = eventService.registrationUserForTheEvent(id);
+        RegistrationResponseDto dto = eventService.registrationUserForTheEvent(id);
         log.info("Пользователь зарегистрирован на мероприятие ID: {}", id);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(registrationEntity);
+                .body(dto);
     }
 
     @DeleteMapping("/cancel/{id}")
