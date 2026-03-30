@@ -28,7 +28,6 @@ public class NotificationService {
     @Transactional(readOnly = true)
     public List<NotificationResponseDto> getNotReadNotificationForUser() throws JsonProcessingException {
         Long userId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        log.info("JWT содержит id={}",userId);
         List<NotificationEntity> allNotification = notificationRepository.findByUserIdAndIsReadFalse(userId);
         List<NotificationResponseDto> result = new ArrayList<>();
         for (NotificationEntity n : allNotification) {
