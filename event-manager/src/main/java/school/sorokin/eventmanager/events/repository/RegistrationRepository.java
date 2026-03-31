@@ -23,9 +23,9 @@ public interface RegistrationRepository extends JpaRepository<RegistrationEntity
     @Query("SELECT COUNT(r) FROM RegistrationEntity r WHERE r.event = :event")
     int countByEvent(@Param("event") EventEntity event);
 
-  Optional<RegistrationEntity> findByEventAndUserId(EventEntity eventEntity, Long id);
+    Optional<RegistrationEntity> findByEventAndUserId(EventEntity eventEntity, Long id);
 
 
-  @Query("SELECT r.user.id FROM RegistrationEntity  r WHERE r.event.id = :eventId")
+    @Query("SELECT r.user.id FROM RegistrationEntity  r WHERE r.event.id = :eventId")
     List<Long> findUserIdsByEventId(@Param("eventId") Long eventId);
 }

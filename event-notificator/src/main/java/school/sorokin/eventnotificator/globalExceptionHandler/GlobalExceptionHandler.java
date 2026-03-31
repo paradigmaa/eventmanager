@@ -1,7 +1,6 @@
 package school.sorokin.eventnotificator.globalExceptionHandler;
+
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.support.MethodArgumentTypeMismatchException;
@@ -17,6 +16,7 @@ import school.sorokin.eventnotificator.globalExceptionHandler.exceptionUtils.Val
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ServerError> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException e) {
-        String message = String.format("Параметр имеет неверный тип");
+        String message = "Параметр имеет неверный тип";
 
         log.warn("Ошибка типа параметра: {}", message);
         return createServerErrorResponse("Неверный тип параметра", message, HttpStatus.BAD_REQUEST);

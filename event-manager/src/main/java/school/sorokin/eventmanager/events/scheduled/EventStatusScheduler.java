@@ -1,4 +1,5 @@
 package school.sorokin.eventmanager.events.scheduled;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,6 +14,7 @@ import school.sorokin.eventmanager.events.entity.EventStatus;
 import school.sorokin.eventmanager.events.repository.EventRepository;
 import school.sorokin.eventmanager.events.repository.RegistrationRepository;
 import school.sorokin.eventmanager.kafka.EventChangeProducer;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -53,26 +55,24 @@ public class EventStatusScheduler {
     }
 
     private void sendStatusChangeEvents(List<Long> eventIds, EventStatus oldStatus, EventStatus newStatus) {
-        if (eventIds.isEmpty()) {
-            return;
-        }
+        if (!eventIds.isEmpty()) {
+            for (Long eventId : eventIds) {
+                EventEntity event = eventRepository.findById(eventId).orElse(null);
+                if (event == null) continue;
 
-        for (Long eventId : eventIds) {
-            EventEntity event = eventRepository.findById(eventId).orElse(null);
-            if (event == null) continue;
-
-            List<ChangeItem> changes = List.of(new ChangeItem("status", oldStatus, newStatus));
-            EventChangeMessage message = new EventChangeMessage(
-                    UUID.randomUUID(),
-                    "SCHEDULER_STATUS_CHANGE",
-                    eventId,
-                    LocalDateTime.now(),
-                    event.getOwner().getId(),
-                    null,
-                    registrationRepository.findUserIdsByEventId(eventId),
-                    changes
-            );
-            eventChangeProducer.send(message);
+                List<ChangeItem> changes = List.of(new ChangeItem("status", oldStatus, newStatus));
+                EventChangeMessage message = new EventChangeMessage(
+                        UUID.randomUUID(),
+                        "SCHEDULER_STATUS_CHANGE",
+                        eventId,
+                        LocalDateTime.now(),
+                        event.getOwner().getId(),
+                        null,
+                        registrationRepository.findUserIdsByEventId(eventId),
+                        changes
+                );
+                eventChangeProducer.send(message);
+            }
         }
     }
 }

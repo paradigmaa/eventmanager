@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import school.sorokin.eventnotificator.entity.NotificationEntity;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -18,4 +19,12 @@ public interface NotificationRepository extends JpaRepository<NotificationEntity
     @Modifying
     @Query("UPDATE NotificationEntity n SET n.isRead = true, n.readAt = CURRENT TIMESTAMP WHERE n.userId = :userId and n.isRead = false")
     int markAllAsRead(@Param("userId") Long userId);
+
+    @Query("SELECT n.payLoadId FROM NotificationEntity n WHERE n.createdAt < :createdAt")
+    List<Long>listForDelete(@Param("createdAt")LocalDateTime created);
+
+    @Modifying
+    @Query("DELETE from NotificationEntity WHERE payLoadId = :payloadId")
+    int deleteOldNotifications(@Param("payloadId") Long payload);
+
 }
