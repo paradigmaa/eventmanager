@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import school.sorokin.eventmanager.locations.dto.CreatLocationDto;
 import school.sorokin.eventmanager.locations.dto.ResponseLocationDto;
@@ -23,6 +24,7 @@ public class LocationController {
     private final LocationService locationService;
 
     @PostMapping()
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<ResponseLocationDto> createLocation(@RequestBody @Valid CreatLocationDto creatLocationDto) {
         log.info("POST /locations - Создание локации: '{}'", creatLocationDto.name());
         ResponseLocationDto newLocation = locationService.createLocation(creatLocationDto);
@@ -33,6 +35,7 @@ public class LocationController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<ResponseLocationDto> updateLocation(@PathVariable("id") Long id, @RequestBody @Valid UpdateLocationDto updateLocationDto) {
         log.info("PUT /locations/{} - Обновление локации:'{}'", id, updateLocationDto.name());
         ResponseLocationDto updatedLocation = locationService.updateLocation(id, updateLocationDto);
@@ -41,6 +44,7 @@ public class LocationController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<ResponseLocationDto> findLocationById(@PathVariable("id") Long id) {
         log.info("GET /locations/{} - Получение локации", id);
         ResponseLocationDto findLocal = locationService.findByIdLocation(id);
@@ -49,12 +53,14 @@ public class LocationController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<List<ResponseLocationDto>> getAllLocations() {
         log.info("GET /locations - Получение всех локаций");
         return ResponseEntity.ok(locationService.getAllLocations());
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<Void> deleteLocation(@PathVariable("id") Long id) {
         log.info("DELETE /locations - удаление локации по id={}", id);
         locationService.deleteLocation(id);

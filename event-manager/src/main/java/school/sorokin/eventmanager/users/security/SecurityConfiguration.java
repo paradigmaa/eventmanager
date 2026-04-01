@@ -24,7 +24,7 @@ import school.sorokin.eventmanager.users.security.jwt.JwtTokenFilter;
 @EnableMethodSecurity
 public class SecurityConfiguration {
 
-        @Autowired
+    @Autowired
     private CustomUserDetailService userDetailService;
 
     @Autowired

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import school.sorokin.eventmanager.events.dto.EventPagination;
 import school.sorokin.eventmanager.events.dto.EventCreateRequestDto;
@@ -29,6 +30,7 @@ public class EventController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<EventResponseDto> createEvent(@RequestBody EventCreateRequestDto eventCreateRequestDto) {
         log.info("Создание мероприятия: {}", eventCreateRequestDto.name());
         EventResponseDto response = eventService.createEvent(eventCreateRequestDto);
@@ -37,6 +39,7 @@ public class EventController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<String> deleteEventById(@PathVariable Long id) {
         log.info("Удаление мероприятия по id={}", id);
         String response = eventService.deleteEvent(id);
@@ -45,6 +48,7 @@ public class EventController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<EventResponseDto> getEventById(@PathVariable Long id) {
         log.info("Получение мероприятия по id={}", id);
         EventResponseDto response = eventService.findEventById(id);
@@ -52,6 +56,7 @@ public class EventController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<EventResponseDto> updateEvent(@PathVariable Long id, @RequestBody EventUpdateRequestDto eventUpdateRequestDto) {
         log.info("Обновление мероприятия по id={}", id);
         EventResponseDto response = eventService.updateEvent(id, eventUpdateRequestDto);
@@ -60,6 +65,7 @@ public class EventController {
     }
 
     @PostMapping("/search")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<Page<EventResponseDto>> getEventsByFilter(@RequestBody EventPagination pagination) {
         log.info("Поиск мероприятий с фильтрами");
         Page<EventResponseDto> response = eventService.getEventsByFilter(pagination);
@@ -68,6 +74,7 @@ public class EventController {
     }
 
     @GetMapping("/my")
+    @PreAuthorize("hasAnyAuthority('USER')")
     public ResponseEntity<List<EventResponseDto>> getUserEvents() {
         log.info("Получение мероприятий созданных текущим пользователем");
         List<EventResponseDto> response = eventService.getCreatedEventsOfTheCurrentUser();
