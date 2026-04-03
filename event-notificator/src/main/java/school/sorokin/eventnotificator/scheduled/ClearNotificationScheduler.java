@@ -23,7 +23,7 @@ public class ClearNotificationScheduler {
     @Transactional
     public void clearNotification() {
         log.info("=== ШЕДУЛЕР ЗАПУЩЕН ===");
-        LocalDateTime sevenDay = LocalDateTime.now().plusDays(7);
+        LocalDateTime sevenDay = LocalDateTime.now().minusDays(7);
         List<Long> notificationListForDelete = notificationRepository.listForDelete(sevenDay);
         if(!notificationListForDelete.isEmpty()) {
             notificationListForDelete.forEach(n -> {

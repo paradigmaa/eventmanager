@@ -2,15 +2,12 @@ package school.sorokin.eventmanager.events.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import school.sorokin.eventmanager.events.dto.EventResponseDto;
 import school.sorokin.eventmanager.events.dto.RegistrationResponseDto;
-import school.sorokin.eventmanager.events.entity.RegistrationEntity;
 import school.sorokin.eventmanager.events.service.EventService;
 
 import java.util.List;

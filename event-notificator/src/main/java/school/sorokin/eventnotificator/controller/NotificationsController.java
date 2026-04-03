@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import school.sorokin.eventnotificator.dto.NotificationResponseDto;
 import school.sorokin.eventnotificator.service.KafkaConsumer;
@@ -31,9 +32,9 @@ public class NotificationsController {
 
     @PostMapping("/notifications")
     @PreAuthorize("hasAnyAuthority('USER')")
-    public ResponseEntity<Void> readAllNotifications() throws JsonProcessingException {
+    public ResponseEntity<String> readNotifications(@RequestBody List<Long>ids) throws JsonProcessingException {
         log.info("Отметить все нотификации прочитанными");
-        notificationService.readAllNotification();
+        notificationService.readAllNotification(ids);
         log.info("Все нотификации прочтены");
         return ResponseEntity.ok().build();
     }

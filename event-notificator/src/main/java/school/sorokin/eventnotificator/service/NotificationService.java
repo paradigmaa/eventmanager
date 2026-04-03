@@ -49,9 +49,13 @@ public class NotificationService {
     }
 
     @Transactional
-    public void readAllNotification() {
+    public String readAllNotification(List<Long> selectMessage) {
         Long userId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int updated = notificationRepository.markAllAsRead(userId);
-        log.info("Помечено как прочитанное {} уведомлений", updated);
+        if(selectMessage.isEmpty()){
+            return "Для пользователя нет нотификаций";
+        }
+        int markNotificationCount = notificationRepository.markNotification(selectMessage, userId);
+        log.info("Помечено как прочитанное {} уведомлений", markNotificationCount);
+        return "Пользователь успешно прочитал выбранные нотификации";
     }
 }
