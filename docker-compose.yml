@@ -2,15 +2,24 @@ version: '3.7'
 
 services:
 
-  postgres:
+  postgres-manager:
     image: postgres:15
-    container_name: postgres
+    container_name: event-manager-base
     environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: event-manager-db
+      POSTGRES_USER: event-manager-db
+      POSTGRES_PASSWORD: event-manager-db
     ports:
       - "5432:5432"
+  postgres-notificator:
+    image: postgres:15
+    container_name: event-notificator-base
+    environment:
+      POSTGRES_DB: event-notificator-db
+      POSTGRES_USER: event-notificator-db
+      POSTGRES_PASSWORD: event-notificator-db
+    ports:
+      - "5433:5432"
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0

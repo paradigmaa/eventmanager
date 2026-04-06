@@ -8,6 +8,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -20,6 +21,7 @@ import school.sorokin.eventmanager.users.exception.exceptionHandler.CustomAuthen
 import school.sorokin.eventmanager.users.security.jwt.JwtTokenFilter;
 
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfiguration {
 
     @Autowired
@@ -43,9 +45,7 @@ public class SecurityConfiguration {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
                         auth
-                                .requestMatchers(HttpMethod.POST, "/users")
-                                .permitAll()
-                                .requestMatchers(HttpMethod.POST, "/users/auth")
+                                .requestMatchers(HttpMethod.POST, "/users", "/users/auth", "/users/create")
                                 .permitAll()
                                 .requestMatchers(
                                         "/openapi.yaml",
@@ -58,41 +58,12 @@ public class SecurityConfiguration {
                                         "/webjars/**",
                                         "/swagger-resources/**"
                                 ).permitAll()
-                                .requestMatchers(HttpMethod.GET, "/users/{id}")
-                                .hasAuthority("ADMIN")
-                                .requestMatchers(HttpMethod.GET, "/locations")
-                                .hasAnyAuthority("ADMIN", "USER")
-                                .requestMatchers(HttpMethod.POST, "/locations")
-                                .hasAuthority("ADMIN")
-                                .requestMatchers(HttpMethod.DELETE, "/locations/{id}")
-                                .hasAuthority("ADMIN")
-                                .requestMatchers(HttpMethod.GET, "/locations/{id}")
-                                .hasAnyAuthority("ADMIN", "USER")
-                                .requestMatchers(HttpMethod.PUT, "/locations/{id}")
-                                .hasAuthority("ADMIN")
-                                .requestMatchers(HttpMethod.POST, "/events")
-                                .hasAuthority("USER")
-                                .requestMatchers(HttpMethod.GET, "/events/{id}")
-                                .hasAnyAuthority("USER", "ADMIN")
-                                .requestMatchers(HttpMethod.PUT, "/events/{id}")
-                                .hasAnyAuthority("USER", "ADMIN")
-                                .requestMatchers(HttpMethod.DELETE, "/events/{id}")
-                                .hasAnyAuthority("USER", "ADMIN")
-                                .requestMatchers(HttpMethod.POST, "/events/search")
-                                .hasAnyAuthority("USER", "ADMIN")
-                                .requestMatchers(HttpMethod.GET, "/events/my")
-                                .hasAuthority("USER")
-                                .requestMatchers(HttpMethod.GET, "/events/registrations/my")
-                                .hasAuthority("USER")
-                                .requestMatchers(HttpMethod.POST, "/events/registrations/{eventId}")
-                                .hasAuthority("USER")
-                                .requestMatchers(HttpMethod.DELETE, "/events/registrations/cancel/{eventId}")
-                                .hasAuthority("USER")
-                                .anyRequest().authenticated())
+                                .anyRequest().authenticated()
+                )
                 .exceptionHandling(exception ->
-                                        exception.authenticationEntryPoint(customAuthenticationEntryPoint)
-                                                .accessDeniedHandler(customAccessDeniedHandler)
-                                )
+                        exception.authenticationEntryPoint(customAuthenticationEntryPoint)
+                                .accessDeniedHandler(customAccessDeniedHandler)
+                )
                 .addFilterBefore(jwtTokenFilter, AnonymousAuthenticationFilter.class)
                 .build();
     }

@@ -1,11 +1,11 @@
 package school.sorokin.eventmanager.users.controller;
 
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import school.sorokin.eventmanager.users.dto.SignInUserRequestDto;
 import school.sorokin.eventmanager.users.dto.UserResponseDto;
@@ -16,19 +16,13 @@ import school.sorokin.eventmanager.users.service.UserService;
 
 @RestController
 @RequestMapping("/users")
+@Slf4j
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
     private final JwtAuthenticationService jwtAuthenticationService;
-
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
-
-    @Autowired
-    public UserController(UserService userService, JwtAuthenticationService jwtAuthenticationService) {
-        this.userService = userService;
-        this.jwtAuthenticationService = jwtAuthenticationService;
-    }
 
     @PostMapping
     public ResponseEntity<UserResponseDto> registrationUser(@RequestBody @Valid RegistrationUserRequestDto registrationUserRequestDto) {
@@ -50,6 +44,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<UserResponseDto> findUserById(@PathVariable("id") Long id) {
         log.info("GET /users/{id} - поиск пользователя по id: '{}'", id);
         UserResponseDto findUser = userService.findUserById(id);

@@ -58,11 +58,12 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
             "GROUP BY e, e.owner, e.location")
     List<Object[]> getAllEventsCurrentUser(@Param("userId") Long userId);
 
-    @Query("SELECT  e from EventEntity e " +
-            "WHERE e.dateTime <= :currentTime " +
-            "AND e.status = :status")
-    List<EventEntity> findByDateTimeBeforeAndStatus(@Param("currentTime") LocalDateTime dateTimeBefore,
-                                                    @Param("status") EventStatus status);
+
+    @Query("SELECT ev from EventEntity ev " +
+            "LEFT JOIN FETCH ev.registrations reg " +
+            "WHERE reg.user.id = :userId")
+    List<EventEntity> getEventForCurrentUser(@Param("userId") Long userId);
+
 
     @Modifying
     @Query("UPDATE EventEntity e SET e.status = 'STARTED' " +
@@ -75,6 +76,11 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
             "WHERE e.status = 'STARTED' AND e.dateTime + e.duration MINUTE <= :now")
     int updateStatusToFinished(@Param("now") LocalDateTime now);
 
+    @Query("SELECT e.id FROM EventEntity e WHERE e.status = 'WAIT_START' AND e.dateTime <= :now")
+    List<Long> findEventIdsToStart(@Param("now") LocalDateTime now);
+
+    @Query("SELECT e.id FROM EventEntity e WHERE e.status = 'STARTED' AND e.dateTime + e.duration MINUTE <= :now")
+    List<Long> findEventIdsToFinish(@Param("now") LocalDateTime now);
 
     boolean existsByName(String name);
 

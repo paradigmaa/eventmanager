@@ -20,10 +20,10 @@ public class LocationConverter {
     public Location convertCreateDtoToLocation(CreatLocationDto newLocation) {
         return new Location(
                 null,
-                newLocation.getName(),
-                newLocation.getAddress(),
-                newLocation.getCapacity(),
-                newLocation.getDescription()
+                newLocation.name(),
+                newLocation.address(),
+                newLocation.capacity(),
+                newLocation.description()
         );
     }
 
@@ -40,10 +40,10 @@ public class LocationConverter {
     public Location convertUpdateLocationDtoToLocation(UpdateLocationDto updateRequest) {
         return new Location(
                 null,
-                updateRequest.getName(),
-                updateRequest.getAddress(),
-                updateRequest.getCapacity(),
-                updateRequest.getDescription()
+                updateRequest.name(),
+                updateRequest.address(),
+                updateRequest.capacity(),
+                updateRequest.description()
         );
     }
 }

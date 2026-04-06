@@ -2,8 +2,10 @@ package school.sorokin.eventmanager.users.security.jwt;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import school.sorokin.eventmanager.users.dto.SignInUserRequestDto;
+import school.sorokin.eventmanager.users.security.CustomUserDetails;
 
 @Service
 public class JwtAuthenticationService {
@@ -19,13 +21,19 @@ public class JwtAuthenticationService {
     }
 
     public String authenticateUser(SignInUserRequestDto signInUserRequestDto) {
-        authenticationManager.authenticate(
+        Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         signInUserRequestDto.login(),
                         signInUserRequestDto.password()
                 )
         );
-        return jwtTokenManager.generateToken(signInUserRequestDto.login());
+
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+
+        Long userId = userDetails.getId();
+
+
+        return jwtTokenManager.generateToken(signInUserRequestDto.login(), userId);
 
     }
 

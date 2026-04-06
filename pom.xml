@@ -41,13 +41,15 @@
                 <artifactId>jjwt-impl</artifactId>
                 <version>${jjwt.version}</version>
             </dependency>
+
+
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt-jackson</artifactId>
                 <version>${jjwt.version}</version>
             </dependency>
 
-            <!-- Общая библиотека -->
+
             <dependency>
                 <groupId>school.sorokin</groupId>
                 <artifactId>event-common</artifactId>

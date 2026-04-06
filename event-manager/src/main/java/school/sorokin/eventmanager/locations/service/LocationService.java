@@ -1,9 +1,6 @@
 package school.sorokin.eventmanager.locations.service;
-
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import school.sorokin.eventmanager.locations.domain.Location;
@@ -18,24 +15,18 @@ import school.sorokin.eventmanager.locations.exception.NotFoundLocationException
 import school.sorokin.eventmanager.locations.repository.LocationRepository;
 
 import java.util.List;
-
+@RequiredArgsConstructor
 @Service
+@Slf4j
 public class LocationService {
     private final LocationRepository locationRepository;
     private final LocationConverter locationConverter;
 
-    private static final Logger log = LoggerFactory.getLogger(LocationService.class);
-
-    @Autowired
-    public LocationService(LocationRepository locationRepository, LocationConverter locationConverter) {
-        this.locationRepository = locationRepository;
-        this.locationConverter = locationConverter;
-    }
 
     @Transactional
     public ResponseLocationDto createLocation(CreatLocationDto createLocation) {
         log.info("Запрос на создание локации у сервиса");
-        checkLocationName(createLocation.getName(), null);
+        checkLocationName(createLocation.name(), null);
         Location newLocation = locationConverter.convertCreateDtoToLocation(createLocation);
         LocationEntity saveLocation = locationRepository.save(locationConverter.convertLocationToEntity(newLocation));
         log.info("Запрос на создание локации '{}' с id={} у сервиса выполнен",

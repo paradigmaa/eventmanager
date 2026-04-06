@@ -8,7 +8,6 @@ import school.sorokin.eventmanager.events.entity.EventEntity;
 import school.sorokin.eventmanager.events.entity.EventStatus;
 import school.sorokin.eventmanager.locations.entity.LocationEntity;
 import school.sorokin.eventmanager.users.entity.UserEntity;
-
 import java.util.ArrayList;
 
 @Component
@@ -47,21 +46,6 @@ public class EventConverter {
 
     }
 
-    public Event convertEvenEntityToEvent(EventEntity eventEntity) {
-        return new Event(
-                eventEntity.getId(),
-                eventEntity.getName(),
-                eventEntity.getDateTime(),
-                eventEntity.getCost(),
-                eventEntity.getDuration(),
-                eventEntity.getMaxPlaces(),
-                eventEntity.getOwner(),
-                eventEntity.getLocation(),
-                eventEntity.getRegistrations(),
-                eventEntity.getStatus()
-        );
-
-    }
 
 
     public EventResponseDto convertEvenEntityToEvenDto(EventEntity event) {
